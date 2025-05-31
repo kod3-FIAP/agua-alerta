@@ -3,11 +3,18 @@ import zonaEmissaoRepository from "../repositories/zonaEmissaoRepository";
 import { CreateEmissorSchema } from "~/server/lib/zod-schemas/emissor/createEmissor";
 import { UpdateEmissorSchema } from "~/server/lib/zod-schemas/emissor/updateEmissor";
 import type { EmissorCreateInput, EmissorSelect, EmissorUpdateInput } from "../lib/types/types";
+import { NotFoundErr } from "../lib/errors/NotFound";
 
 
 export const emissorService = {
   async getEmissorById(id: number): Promise<EmissorSelect> {
-    return emissorRepository.findById(id) as EmissorSelect;
+    const emissor = await emissorRepository.findById(id);
+
+    if (!emissor) {
+      throw new NotFoundErr("Emissor não foi encontrado")
+    }
+
+    return emissor as unknown as EmissorSelect;
   },
 
   async getAllEmissores(args?: Parameters<typeof emissorRepository.findAll>[0]): Promise<EmissorSelect[]> {
@@ -23,7 +30,7 @@ export const emissorService = {
 
     const zona = await zonaEmissaoRepository.findById(validatedData.idZonaEmissao);
     if (!zona) {
-      throw new Error("Zona de Emissão não foi encontrada para o emissor.");
+      throw new NotFoundErr("Zona de Emissão não foi encontrada para o emissor.");
     }
 
     if (
@@ -48,6 +55,12 @@ export const emissorService = {
   },
 
   async deleteEmissor(id: number) {
+    const emissor = await emissorRepository.findById(id);
+
+    if (!emissor) {
+      throw new NotFoundErr("Emissor não foi encontrado")
+    }
+
     return emissorRepository.delete(id);
   },
 };

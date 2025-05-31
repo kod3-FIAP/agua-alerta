@@ -4,7 +4,6 @@ import { NotFoundErr } from '~/server/lib/errors/NotFound';
 import { parseId } from '~/server/lib/zod-schemas/id/idSchema';
 import { receptorService } from '~/server/services/receptorService';
 
-// api/v1/receptores/[id]
 export async function GET(
   request: Request,
   { params }: { params: { idPath: string } }

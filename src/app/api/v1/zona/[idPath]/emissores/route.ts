@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { NotFoundErr } from '~/server/lib/errors/NotFound';
 import { parseId } from '~/server/lib/zod-schemas/id/idSchema';
-import { receptorService } from '~/server/services/receptorService';
+import { emissorService } from '~/server/services/emissorService';
 
+// /api/v1/zona/[id]/emissores
 export async function GET(
   request: Request,
   { params }: { params: { idPath: string } }
@@ -11,7 +12,7 @@ export async function GET(
   try {
     let { idPath } = await params;
     let id = parseId(idPath);
-    const zonaEmissao = await receptorService.getReceptoresByZonaEmissaoId(id);
+    const zonaEmissao = await emissorService.getEmissoresByZonaEmissaoId(id);
     return NextResponse.json(zonaEmissao);
 
   } catch (error) {

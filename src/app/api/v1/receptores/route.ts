@@ -4,7 +4,6 @@ import type { ReceptorCreateInput, ReceptorSelect } from '~/server/lib/types/typ
 import { receptorService } from '~/server/services/receptorService';
 import { NotFoundErr } from '~/server/lib/errors/NotFound';
 
-// api/v1/receptores
 export async function GET(request: Request): Promise<NextResponse<ReceptorSelect[] | { message: string }>> {
     try {
         const zonasEmissao = await receptorService.getAllReceptores();

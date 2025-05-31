@@ -88,10 +88,10 @@ model ZonaEmissao {
 
 model Abrigo {
   idAbrigo        Int     @id @default(autoincrement())
-  latitude        Float?
-  longitude       Float?
+  latitude        Float
+  longitude       Float
   nome            String
-  descricao       String?
+  descricao       String
 
   idZonaEmissao   Int
   zonaEmissao     ZonaEmissao @relation(fields: [idZonaEmissao], references: [idZonaEmissao])
@@ -99,35 +99,26 @@ model Abrigo {
 
 model Emissor {
   id              Int      @id @default(autoincrement())
-  descricao       String?
-  latitude        Float?
-  longitude       Float?
-  valorAlerta     Float?
-  valorEmergencia Float?
+  descricao       String
+  latitude        Float
+  longitude       Float
+  valorAlerta     Float
+  valorEmergencia Float
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  idZonaEmissao   Int
+  idZonaEmissao   Int         @unique
   zonaEmissao     ZonaEmissao @relation(fields: [idZonaEmissao], references: [idZonaEmissao])
 }
 
 model Receptor {
   id              Int      @id @default(autoincrement())
-  descricao       String?
-  latitude        Float?
-  longitude       Float?
+  descricao       String
+  latitude        Float
+  longitude       Float
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   idZonaEmissao   Int
   zonaEmissao     ZonaEmissao @relation(fields: [idZonaEmissao], references: [idZonaEmissao])
-}
-
-generator zod {
-  provider              = "prisma-zod-generator"
-  output                = "../src/schemas/zod" 
-  relationModel         = true 
-  modelCase             = "camelCase" 
-  modelSuffix           = "Schema" 
-  prismaJsonNullability = true
 }
