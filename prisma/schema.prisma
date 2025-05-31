@@ -72,3 +72,62 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+
+// Modelos do ERD
+
+model ZonaEmissao {
+  idZonaEmissao Int      @id @default(autoincrement())
+  nome          String   @unique
+  descricao     String
+
+  abrigos    Abrigo[]
+  emissores  Emissor[]
+  receptores Receptor[]
+}
+
+model Abrigo {
+  idAbrigo        Int     @id @default(autoincrement())
+  latitude        Float?
+  longitude       Float?
+  nome            String
+  descricao       String?
+
+  idZonaEmissao   Int
+  zonaEmissao     ZonaEmissao @relation(fields: [idZonaEmissao], references: [idZonaEmissao])
+}
+
+model Emissor {
+  id              Int      @id @default(autoincrement())
+  descricao       String?
+  latitude        Float?
+  longitude       Float?
+  valorAlerta     Float?
+  valorEmergencia Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  idZonaEmissao   Int
+  zonaEmissao     ZonaEmissao @relation(fields: [idZonaEmissao], references: [idZonaEmissao])
+}
+
+model Receptor {
+  id              Int      @id @default(autoincrement())
+  descricao       String?
+  latitude        Float?
+  longitude       Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  idZonaEmissao   Int
+  zonaEmissao     ZonaEmissao @relation(fields: [idZonaEmissao], references: [idZonaEmissao])
+}
+
+generator zod {
+  provider              = "prisma-zod-generator"
+  output                = "../src/schemas/zod" 
+  relationModel         = true 
+  modelCase             = "camelCase" 
+  modelSuffix           = "Schema" 
+  prismaJsonNullability = true
+}

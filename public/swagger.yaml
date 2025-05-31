@@ -1,0 +1,343 @@
+openapi: 3.0.0
+info:
+  title: API de Zonas de Emissão
+  version: v1
+  description: API para gerenciar Zonas de Emissão.
+tags:
+  - name: Zona de Emissão
+    description: Operações relacionadas a zonas de emissão
+
+paths:
+  /api/v1/zona:
+    get:
+      tags:
+        - Zona de Emissão
+      summary: Busca todas as zonas de emissão
+      description: Retorna uma lista de todas as zonas de emissão cadastradas.
+      operationId: getAllZonasEmissao
+      responses:
+        '200':
+          description: Lista de zonas de emissão recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ZonaEmissaoWithRelationships'
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar Zonas de Emissão."
+    post:
+      tags:
+        - Zona de Emissão
+      summary: Cria uma nova zona de emissão
+      description: Cria uma nova zona de emissão com os dados fornecidos.
+      operationId: createZonaEmissao
+      requestBody:
+        description: Dados da nova zona de emissão.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZonaEmissaoCreateInput'
+      responses:
+        '201':
+          description: Zona de emissão criada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZonaEmissaoWithoutRelationships'
+        '400':
+          description: Dados inválidos fornecidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "Dados inválidos."
+                errors:
+                  - path: ["nome"]
+                    message: "O campo 'nome' é obrigatório."
+        '409':
+          description: Conflito, zona de emissão com este nome já existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Já existe uma Zona de Emissão com este nome."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                databaseError:
+                  summary: Erro no banco de dados
+                  value:
+                    message: "Erro no banco de dados ao criar a Zona de Emissão."
+                genericServerError:
+                  summary: Erro interno genérico do servidor
+                  value:
+                    message: "Erro interno no servidor ao criar a Zona de Emissão."
+
+  /api/v1/zona/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID numérico da zona de emissão a ser operada. O serviço espera um inteiro positivo.
+        schema:
+          type: number
+          example: 1
+    get:
+      tags:
+        - Zona de Emissão
+      summary: Busca uma zona de emissão pelo ID
+      description: Retorna uma zona de emissão específica com base no seu ID.
+      operationId: getZonaEmissaoById
+      responses:
+        '200':
+          description: Zona de emissão recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZonaEmissaoWithRelationships'
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "O ID deve ser um número inteiro."
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não foi encontrada."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar zona de emissão."
+    put:
+      tags:
+        - Zona de Emissão
+      summary: Atualiza uma zona de emissão existente
+      description: Atualiza os dados de uma zona de emissão existente identificada pelo ID.
+      operationId: updateZonaEmissaoById
+      requestBody:
+        description: Dados para atualizar a zona de emissão.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZonaEmissaoUpdateInput'
+      responses:
+        '200':
+          description: Zona de emissão atualizada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZonaEmissaoWithoutRelationships'
+        '400':
+          description: ID fornecido é inválido ou dados de atualização são inválidos.
+          content:
+            application/json:
+              examples:
+                invalidId:
+                  summary: ID inválido
+                  value:
+                    message: "O ID deve ser um número inteiro."
+                  $ref: '#/components/schemas/ErrorMessage'
+                validationFailed:
+                  summary: Falha na validação dos dados
+                  value:
+                    message: "A Validação falhou"
+                    errors:
+                      - path: ["nome"]
+                        message: "Nome não pode ser vazio."
+                  $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não foi encontrada"
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao atualizar zona de emissão."
+    delete:
+      tags:
+        - Zona de Emissão
+      summary: Exclui uma zona de emissão
+      description: Exclui uma zona de emissão existente identificada pelo ID.
+      operationId: deleteZonaEmissaoById
+      responses:
+        '204':
+          description: Zona de emissão excluída com sucesso. Sem conteúdo.
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "O ID deve ser um número inteiro."
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não foi encontrada"
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao remover zona de emissão."
+
+components:
+  schemas:
+    ZonaEmissaoWithRelationships:
+      type: object
+      description: Representa uma zona de emissão.
+      properties:
+        id:
+          type: number
+          description: Identificador único da zona de emissão.
+          readOnly: true
+          example: 1
+        nome:
+          type: string
+          description: Nome da zona de emissão.
+          example: "Zona Industrial Norte"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional da zona de emissão.
+          example: "Área com concentração de indústrias pesadas."
+        abrigos:
+          type: array
+          example: []
+        emissores:
+          type: array
+          example: []
+        receptores:
+          type: array
+          example: []
+        
+    ZonaEmissaoWithoutRelationships:
+        type: object
+        description: Representa uma zona de emissão.
+        properties:
+          id:
+            type: number 
+            description: Identificador único da zona de emissão.
+            readOnly: true
+            example: 1 
+          nome:
+            type: string
+            description: Nome da zona de emissão.
+            example: "Zona Industrial Norte"
+          descricao:
+            type: string
+            nullable: true
+            description: Descrição opcional da zona de emissão.
+            example: "Área com concentração de indústrias pesadas."
+            
+    ZonaEmissaoCreateInput:
+      type: object
+      description: Dados necessários para criar uma nova zona de emissão.
+      properties:
+        nome:
+          type: string
+          description: Nome da zona de emissão.
+          example: "Centro Histórico"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional da zona de emissão.
+          example: "Área de preservação com restrições de emissão."
+      required:
+        - nome
+
+    ZonaEmissaoUpdateInput:
+      type: object
+      description: Dados para atualizar uma zona de emissão existente. Pelo menos um campo modificável deve ser fornecido.
+      properties:
+        nome:
+          type: string
+          description: Novo nome da zona de emissão.
+          example: "Zona Residencial Oeste Atualizada"
+        descricao:
+          type: string
+          nullable: true
+          description: Nova descrição opcional da zona de emissão.
+          example: "Área predominantemente residencial com parques e ciclovias."
+
+
+    ErrorMessage:
+      type: object
+      description: Esquema genérico para mensagens de erro.
+      properties:
+        message:
+          type: string
+          description: Mensagem de erro.
+      required:
+        - message
+
+    ValidationError:
+      type: object
+      description: Esquema para erros de validação.
+      properties:
+        message:
+          type: string
+          description: Mensagem geral indicando que os dados são inválidos ou falha na validação.
+          example: "A Validação falhou" 
+        errors:
+          type: array
+          description: Uma lista de erros de validação detalhados.
+          items:
+            type: object
+            properties:
+              path:
+                type: array
+                items:
+                  type: string 
+                description: O caminho para o campo que falhou na validação.
+                example: ["nome"]
+              message:
+                type: string
+                description: A mensagem de erro específica para este campo.
+                example: "Nome deve ter pelo menos 3 caracteres."
+            required:
+              - path
+              - message
+      required:
+        - message
+        - errors
