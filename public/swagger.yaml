@@ -242,7 +242,7 @@ paths:
         - Zona de Emissão
       summary: Busca todos os receptores de uma zona de emissão
       description: Retorna uma lista de todos os receptores associados a uma zona de emissão específica.
-      operationId: getReceptoresByZonaEmissaoId
+      operationId: getReceptoresByidZonaEmissao
       responses:
         '200':
           description: Lista de receptores recuperada com sucesso.
@@ -295,7 +295,7 @@ paths:
         - Zona de Emissão
       summary: Busca todos os emissores de uma zona de emissão
       description: Retorna uma lista de todos os emissores associados a uma zona de emissão específica.
-      operationId: getEmissoresByZonaEmissaoId
+      operationId: getEmissoresByidZonaEmissao
       responses:
         '200':
           description: Lista de emissores recuperada com sucesso.
@@ -335,7 +335,7 @@ paths:
 
   /api/v1/zona/{id}/abrigos:
     parameters:
-      - name: id # Corresponds to idPath in the code, interpreted as zonaEmissaoId
+      - name: id # Corresponds to idPath in the code, interpreted as idZonaEmissao
         in: path
         required: true
         description: ID numérico da zona de emissão para buscar seus abrigos.
@@ -348,7 +348,7 @@ paths:
         - Zona de Emissão
       summary: Busca todos os abrigos de uma zona de emissão
       description: Retorna uma lista de todos os abrigos associados a uma zona de emissão específica.
-      operationId: getAbrigosByZonaEmissaoId
+      operationId: getAbrigosByidZonaEmissao
       responses:
         '200':
           description: Lista de abrigos recuperada com sucesso.
@@ -889,7 +889,7 @@ paths:
         description: ID numérico do abrigo a ser operado.
         schema:
           type: number
-          example: 30
+          example: 1
     get:
       tags:
         - Abrigo
@@ -1030,7 +1030,7 @@ components:
       type: object
       description: Representa uma zona de emissão com suas relações.
       properties:
-        id:
+        idZonaEmissao:
           type: number
           description: Identificador único da zona de emissão.
           readOnly: true
@@ -1038,7 +1038,7 @@ components:
         nome:
           type: string
           description: Nome da zona de emissão.
-          example: "Zona Industrial Norte"
+          example: "kod3/zona"
         descricao:
           type: string
           nullable: true
@@ -1067,7 +1067,7 @@ components:
         type: object
         description: Representa uma zona de emissão (sem detalhamento de relações diretas).
         properties:
-          id:
+          idZonaEmissao:
             type: number 
             description: Identificador único da zona de emissão.
             readOnly: true
@@ -1075,7 +1075,7 @@ components:
           nome:
             type: string
             description: Nome da zona de emissão.
-            example: "Zona Industrial Norte"
+            example: "kod3/zona"
           descricao:
             type: string
             nullable: true
@@ -1140,7 +1140,7 @@ components:
           format: double
           description: Longitude do receptor.
           example: -46.7890
-        zonaEmissaoId:
+        idZonaEmissao:
           type: number
           description: ID da Zona de Emissão à qual o receptor pertence.
           example: 1
@@ -1167,7 +1167,7 @@ components:
           format: double
           description: Longitude do receptor.
           example: -46.7901
-        zonaEmissaoId:
+        idZonaEmissao:
           type: number
           description: ID da Zona de Emissão à qual o receptor será associado.
           example: 1
@@ -1175,7 +1175,7 @@ components:
         - nome
         - latitude
         - longitude
-        - zonaEmissaoId
+        - idZonaEmissao
 
     ReceptorUpdateInput:
       type: object
@@ -1199,7 +1199,7 @@ components:
           format: double
           description: Nova longitude do receptor.
           example: -46.7902
-        zonaEmissaoId:
+        idZonaEmissao:
           type: number
           description: Novo ID da Zona de Emissão à qual o receptor será associado.
           example: 2
@@ -1241,7 +1241,7 @@ components:
           type: number
           description: ID do tipo de emissor (referencia uma entidade TipoEmissor não definida neste escopo).
           example: 3
-        zonaEmissaoId:
+        idZonaEmissao:
           type: number
           description: ID da Zona de Emissão à qual o emissor pertence.
           example: 1
@@ -1273,7 +1273,7 @@ components:
         tipoEmissorId:
           type: number
           description: ID do tipo de emissor.
-        zonaEmissaoId:
+        idZonaEmissao:
           type: number
           description: ID da Zona de Emissão à qual o emissor será associado.
       required:
@@ -1282,7 +1282,7 @@ components:
         - longitude
         - altura
         - tipoEmissorId
-        - zonaEmissaoId
+        - idZonaEmissao
 
     EmissorUpdateInput:
       type: object
@@ -1310,7 +1310,7 @@ components:
         tipoEmissorId:
           type: number
           description: Novo ID do tipo de emissor.
-        zonaEmissaoId:
+        idZonaEmissao:
           type: number
           description: Novo ID da Zona de Emissão.
 
@@ -1318,11 +1318,11 @@ components:
       type: object
       description: Representa um abrigo (e.g., barreira acústica).
       properties:
-        id:
+        idAbrigo:
           type: number
           description: Identificador único do abrigo.
           readOnly: true
-          example: 30
+          example: 1
         nome:
           type: string
           description: Nome do abrigo.
@@ -1332,17 +1332,23 @@ components:
           nullable: true
           description: Descrição opcional do abrigo.
           example: "Barreira de concreto com 3m de altura."
-        geometria:
-          type: object
-          description: Representação geométrica do abrigo (e.g., GeoJSON LineString ou Polygon).
-          example: { "type": "LineString", "coordinates": [[-46.000, -23.000], [-46.001, -23.001]] }
+        latitude:
+          type: number
+          format: double
+          description: Latitude do receptor.
+          example: -22.4567
+        longitude:
+          type: number
+          format: double
+          description: Longitude do receptor.
+          example: -46.7890
         atenuacao:
           type: number
           format: double
           nullable: true
           description: Valor de atenuação acústica (dB), se aplicável.
           example: 15.5
-        zonaEmissaoId:
+        idZonaEmissao:
           type: number
           description: ID da Zona de Emissão à qual o abrigo está associado.
           example: 1
@@ -1359,22 +1365,24 @@ components:
           type: string
           nullable: true
           description: Descrição opcional do abrigo.
-        geometria:
-          type: object
-          description: Representação geométrica do abrigo.
-          example: { "type": "Polygon", "coordinates": [[[-46.002, -23.002], [-46.003, -23.002], [-46.003, -23.003], [-46.002, -23.003], [-46.002, -23.002]]] }
-        atenuacao:
+        latitude:
           type: number
           format: double
-          nullable: true
-          description: Valor de atenuação acústica (dB).
-        zonaEmissaoId:
+          description: Latitude do receptor.
+          example: -22.4567
+        longitude:
+          type: number
+          format: double
+          description: Longitude do receptor.
+          example: -46.7890
+        idZonaEmissao:
           type: number
           description: ID da Zona de Emissão à qual o abrigo será associado.
       required:
         - nome
-        - geometria
-        - zonaEmissaoId
+        - idZonaEmissao
+        - latitude
+        - longitude
 
     AbrigoUpdateInput:
       type: object
@@ -1387,15 +1395,12 @@ components:
           type: string
           nullable: true
           description: Nova descrição opcional do abrigo.
-        geometria:
-          type: object
-          description: Nova representação geométrica do abrigo.
         atenuacao:
           type: number
           format: double
           nullable: true
           description: Novo valor de atenuação acústica (dB).
-        zonaEmissaoId:
+        idZonaEmissao:
           type: number
           description: Novo ID da Zona de Emissão.
 
