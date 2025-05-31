@@ -36,11 +36,6 @@ export async function POST(request: Request): Promise<NextResponse<ZonaEmissaoSe
           { status: 409 }
         );
       }
-
-      return NextResponse.json(
-        { message: "Erro interno ao criar a Zona de Emissão." },
-        { status: 500 }
-      );
     }
 
     return NextResponse.json({ message: "Erro interno no servidor ao criar a Zona de Emissão." }, { status: 500 });

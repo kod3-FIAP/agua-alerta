@@ -1,11 +1,13 @@
 openapi: 3.0.0
 info:
-  title: API de Zonas de Emissão
+  title: API de Zonas de Emissão e Receptores
   version: v1
-  description: API para gerenciar Zonas de Emissão.
+  description: API para gerenciar Zonas de Emissão e seus Receptores.
 tags:
   - name: Zona de Emissão
     description: Operações relacionadas a zonas de emissão
+  - name: Receptor
+    description: Operações relacionadas a receptores
 
 paths:
   /api/v1/zona:
@@ -162,7 +164,7 @@ paths:
                   summary: ID inválido
                   value:
                     message: "O ID deve ser um número inteiro."
-                  $ref: '#/components/schemas/ErrorMessage'
+                  $ref: '#/components/schemas/ErrorMessage' # Corrected reference for example
                 validationFailed:
                   summary: Falha na validação dos dados
                   value:
@@ -170,7 +172,7 @@ paths:
                     errors:
                       - path: ["nome"]
                         message: "Nome não pode ser vazio."
-                  $ref: '#/components/schemas/ValidationError'
+                  $ref: '#/components/schemas/ValidationError' # Corrected reference for example
         '404':
           description: Zona de emissão não encontrada.
           content:
@@ -221,11 +223,281 @@ paths:
               example:
                 message: "Erro interno ao remover zona de emissão."
 
+  /api/v1/zona/{id}/receptores:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID numérico da zona de emissão.
+        schema:
+          type: number
+          example: 1
+    get:
+      tags:
+        - Receptor
+        - Zona de Emissão
+      summary: Busca todos os receptores de uma zona de emissão
+      description: Retorna uma lista de todos os receptores associados a uma zona de emissão específica.
+      operationId: getReceptoresByidZonaEmissao
+      responses:
+        '200':
+          description: Lista de receptores recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceptorSelect'
+        '400':
+          description: ID da zona de emissão em formato inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                  - path: ["id"]
+                    message: "O ID deve ser um número inteiro positivo."
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não encontrada."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar receptores da zona de emissão."
+
+  /api/v1/receptores:
+    get:
+      tags:
+        - Receptor
+      summary: Busca todos os receptores
+      description: Retorna uma lista de todos os receptores cadastrados.
+      operationId: getAllReceptores
+      responses:
+        '200':
+          description: Lista de receptores recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceptorSelect'
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar Receptores."
+    post:
+      tags:
+        - Receptor
+      summary: Cria um novo receptor
+      description: Cria um novo receptor com os dados fornecidos.
+      operationId: createReceptor
+      requestBody:
+        description: Dados do novo receptor.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceptorCreateInput'
+      responses:
+        '201':
+          description: Receptor criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceptorSelect'
+        '400':
+          description: Dados inválidos fornecidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "Dados inválidos."
+                errors:
+                  - path: ["nome"]
+                    message: "O campo 'nome' é obrigatório."
+                  - path: ["idZonaEmissao"]
+                    message: "Zona de Emissão não encontrada para o ID fornecido." # Example of a specific validation error
+        '404':
+          description: Entidade relacionada não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão com ID especificado não foi encontrada."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno no servidor ao criar o Receptor."
+
+  /api/v1/receptores/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID numérico do receptor a ser operado. O serviço espera um inteiro positivo.
+        schema:
+          type: number
+          example: 10
+    get:
+      tags:
+        - Receptor
+      summary: Busca um receptor pelo ID
+      description: Retorna um receptor específico com base no seu ID.
+      operationId: getReceptorById
+      responses:
+        '200':
+          description: Receptor recuperado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceptorSelect'
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError' # Using ValidationError for ID format issues if they come from Zod
+              example:
+                message: "ID em formato inválido"
+                errors:
+                 - path: ["id"]
+                   message: "O ID deve ser um número inteiro positivo."
+        '404':
+          description: Receptor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Receptor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar receptor."
+    put:
+      tags:
+        - Receptor
+      summary: Atualiza um receptor existente
+      description: Atualiza os dados de um receptor existente identificado pelo ID.
+      operationId: updateReceptorById
+      requestBody:
+        description: Dados para atualizar o receptor.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceptorUpdateInput'
+      responses:
+        '200':
+          description: Receptor atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceptorSelect'
+        '400':
+          description: ID fornecido é inválido ou dados de atualização são inválidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              examples: # Using examples within content, not directly as siblings to description
+                invalidId:
+                  summary: ID inválido
+                  value:
+                    message: "ID em formato inválido"
+                    errors:
+                      - path: ["id"]
+                        message: "O ID deve ser um número inteiro positivo."
+                validationFailed:
+                  summary: Falha na validação dos dados
+                  value:
+                    message: "A Validação falhou"
+                    errors:
+                      - path: ["nome"]
+                        message: "Nome não pode ser vazio."
+        '404':
+          description: Receptor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Receptor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao atualizar receptor."
+    delete:
+      tags:
+        - Receptor
+      summary: Exclui um receptor
+      description: Exclui um receptor existente identificado pelo ID.
+      operationId: deleteReceptorById
+      responses:
+        '204':
+          description: Receptor excluído com sucesso. Sem conteúdo.
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError' # Using ValidationError for ID format issues if they come from Zod
+              example:
+                message: "ID em formato inválido"
+                errors:
+                 - path: ["id"]
+                   message: "O ID deve ser um número inteiro positivo."
+        '404':
+          description: Receptor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Receptor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao remover receptor."
+
 components:
   schemas:
     ZonaEmissaoWithRelationships:
       type: object
-      description: Representa uma zona de emissão.
+      description: Representa uma zona de emissão com suas relações.
       properties:
         id:
           type: number
@@ -241,19 +513,28 @@ components:
           nullable: true
           description: Descrição opcional da zona de emissão.
           example: "Área com concentração de indústrias pesadas."
-        abrigos:
+        abrigos: # Assuming these are placeholders for now or handled by other endpoints
           type: array
+          items: 
+            type: object # Or a more specific schema if defined
+          description: Lista de abrigos associados à zona de emissão.
           example: []
-        emissores:
+        emissores: # Assuming these are placeholders for now or handled by other endpoints
           type: array
+          items: 
+            type: object # Or a more specific schema if defined
+          description: Lista de emissores associados à zona de emissão.
           example: []
-        receptores:
+        receptores: # Could be array of ReceptorSelect if desired to embed
           type: array
+          items: 
+            type: object # Or $ref: '#/components/schemas/ReceptorSelect'
+          description: Lista de receptores associados à zona de emissão (pode ser buscada via endpoint dedicado).
           example: []
         
     ZonaEmissaoWithoutRelationships:
         type: object
-        description: Representa uma zona de emissão.
+        description: Representa uma zona de emissão (sem detalhamento de relações diretas).
         properties:
           id:
             type: number 
@@ -300,6 +581,97 @@ components:
           description: Nova descrição opcional da zona de emissão.
           example: "Área predominantemente residencial com parques e ciclovias."
 
+    ReceptorSelect:
+      type: object
+      description: Representa um receptor.
+      properties:
+        id:
+          type: number
+          description: Identificador único do receptor.
+          readOnly: true
+          example: 10
+        nome:
+          type: string
+          description: Nome do receptor.
+          example: "Hospital Central"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional do receptor.
+          example: "Receptor sensível a ruído."
+        latitude:
+          type: number
+          format: double
+          description: Latitude do receptor.
+          example: -22.4567
+        longitude:
+          type: number
+          format: double
+          description: Longitude do receptor.
+          example: -46.7890
+        idZonaEmissao:
+          type: number
+          description: ID da Zona de Emissão à qual o receptor pertence.
+          example: 1
+
+    ReceptorCreateInput:
+      type: object
+      description: Dados necessários para criar um novo receptor.
+      properties:
+        nome:
+          type: string
+          description: Nome do receptor.
+          example: "Escola Municipal"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional do receptor.
+        latitude:
+          type: number
+          format: double
+          description: Latitude do receptor.
+          example: -22.4588
+        longitude:
+          type: number
+          format: double
+          description: Longitude do receptor.
+          example: -46.7901
+        idZonaEmissao:
+          type: number
+          description: ID da Zona de Emissão à qual o receptor será associado.
+          example: 1
+      required:
+        - nome
+        - latitude
+        - longitude
+        - idZonaEmissao
+
+    ReceptorUpdateInput:
+      type: object
+      description: Dados para atualizar um receptor existente. Pelo menos um campo deve ser fornecido.
+      properties:
+        nome:
+          type: string
+          description: Novo nome do receptor.
+          example: "Escola Municipal Fundamental"
+        descricao:
+          type: string
+          nullable: true
+          description: Nova descrição opcional do receptor.
+        latitude:
+          type: number
+          format: double
+          description: Nova latitude do receptor.
+          example: -22.4589
+        longitude:
+          type: number
+          format: double
+          description: Nova longitude do receptor.
+          example: -46.7902
+        idZonaEmissao:
+          type: number
+          description: Novo ID da Zona de Emissão à qual o receptor será associado.
+          example: 2
 
     ErrorMessage:
       type: object
