@@ -3,13 +3,18 @@ import zonaEmissaoRepository from "../repositories/zonaEmissaoRepository";
 import { CreateAbrigoSchema } from "~/server/lib/zod-schemas/abrigo/createAbrigoSchema";
 import { UpdateAbrigoSchema } from "~/server/lib/zod-schemas/abrigo/updateAbrigoSchema";
 import type { AbrigoCreateInput, AbrigoSelect, AbrigoUpdateInput } from "../lib/types/types";
+import { NotFoundErr } from "../lib/errors/NotFound";
 
 export const abrigoService = {
   async getAbrigoById(idAbrigo: number): Promise<AbrigoSelect> {
-    return abrigoRepository.findById(idAbrigo) as AbrigoSelect;
+    const abrigo = await abrigoRepository.findById(idAbrigo)
+    if (!abrigo) {
+      throw new NotFoundErr("Abrigo não foi encontrado.")
+    }
+    return abrigo as unknown as AbrigoSelect;
   },
 
-  async getAllAbrigos(args?: Parameters<typeof abrigoRepository.findAll>[0]): Promise<AbrigoSelect[]>  {
+  async getAllAbrigos(args?: Parameters<typeof abrigoRepository.findAll>[0]): Promise<AbrigoSelect[]> {
     return abrigoRepository.findAll(args) as unknown as AbrigoSelect[];
   },
 
@@ -40,6 +45,10 @@ export const abrigoService = {
   },
 
   async deleteAbrigo(idAbrigo: number) {
+    const abrigo = await abrigoRepository.findById(idAbrigo)
+    if (!abrigo) {
+      throw new NotFoundErr("Abrigo não foi encontrado.")
+    }
     return abrigoRepository.delete(idAbrigo);
   },
 };

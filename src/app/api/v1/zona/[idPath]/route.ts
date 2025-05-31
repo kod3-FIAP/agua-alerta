@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
 
-        let { idPath } = await params;
+    let { idPath } = await params;
     let id = parseId(idPath);
     const zonaEmissao = await zonaEmissaoService.getZonaEmissaoById(id);
     return NextResponse.json(zonaEmissao);
@@ -34,7 +34,7 @@ export async function PUT(
 ) {
   try {
 
-        let { idPath } = await params;
+    let { idPath } = await params;
     let id = parseId(idPath);
     const body = await request.json();
     const updatedZonaEmissao = await zonaEmissaoService.updateZonaEmissao(id, body);
@@ -58,7 +58,7 @@ export async function DELETE(
 ) {
   try {
 
-        let { idPath } = await params;
+    let { idPath } = await params;
     let id = parseId(idPath);
     await zonaEmissaoService.deleteZonaEmissao(id);
     return new NextResponse(null, { status: 204 });
