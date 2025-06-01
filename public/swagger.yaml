@@ -1,0 +1,1446 @@
+openapi: 3.0.0
+info:
+  title: API de Zonas de Emissão, Receptores, Emissores e Abrigos
+  version: v1
+  description: API para gerenciar Zonas de Emissão, seus Receptores, Emissores e Abrigos.
+tags:
+  - name: Zona de Emissão
+    description: Operações relacionadas a zonas de emissão
+  - name: Receptor
+    description: Operações relacionadas a receptores
+  - name: Emissor
+    description: Operações relacionadas a emissores
+  - name: Abrigo
+    description: Operações relacionadas a abrigos (e.g., barreiras acústicas)
+
+paths:
+  /api/v1/zona:
+    get:
+      tags:
+        - Zona de Emissão
+      summary: Busca todas as zonas de emissão
+      description: Retorna uma lista de todas as zonas de emissão cadastradas.
+      operationId: getAllZonasEmissao
+      responses:
+        '200':
+          description: Lista de zonas de emissão recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ZonaEmissaoWithRelationships'
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar Zonas de Emissão."
+    post:
+      tags:
+        - Zona de Emissão
+      summary: Cria uma nova zona de emissão
+      description: Cria uma nova zona de emissão com os dados fornecidos.
+      operationId: createZonaEmissao
+      requestBody:
+        description: Dados da nova zona de emissão.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZonaEmissaoCreateInput'
+      responses:
+        '201':
+          description: Zona de emissão criada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZonaEmissaoWithoutRelationships'
+        '400':
+          description: Dados inválidos fornecidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "Dados inválidos."
+                errors:
+                  - path: ["nome"]
+                    message: "O campo 'nome' é obrigatório."
+        '409':
+          description: Conflito, zona de emissão com este nome já existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Já existe uma Zona de Emissão com este nome."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                databaseError:
+                  summary: Erro no banco de dados
+                  value:
+                    message: "Erro no banco de dados ao criar a Zona de Emissão."
+                genericServerError:
+                  summary: Erro interno genérico do servidor
+                  value:
+                    message: "Erro interno no servidor ao criar a Zona de Emissão."
+
+  /api/v1/zona/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID numérico da zona de emissão a ser operada. O serviço espera um inteiro positivo.
+        schema:
+          type: number
+          example: 1
+    get:
+      tags:
+        - Zona de Emissão
+      summary: Busca uma zona de emissão pelo ID
+      description: Retorna uma zona de emissão específica com base no seu ID.
+      operationId: getZonaEmissaoById
+      responses:
+        '200':
+          description: Zona de emissão recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZonaEmissaoWithRelationships'
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "O ID deve ser um número inteiro."
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não foi encontrada."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar zona de emissão."
+    put:
+      tags:
+        - Zona de Emissão
+      summary: Atualiza uma zona de emissão existente
+      description: Atualiza os dados de uma zona de emissão existente identificada pelo ID.
+      operationId: updateZonaEmissaoById
+      requestBody:
+        description: Dados para atualizar a zona de emissão.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZonaEmissaoUpdateInput'
+      responses:
+        '200':
+          description: Zona de emissão atualizada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZonaEmissaoWithoutRelationships'
+        '400':
+          description: ID fornecido é inválido ou dados de atualização são inválidos.
+          content:
+            application/json:
+              examples:
+                invalidId:
+                  summary: ID inválido
+                  value:
+                    message: "O ID deve ser um número inteiro."
+                  $ref: '#/components/schemas/ErrorMessage'
+                validationFailed:
+                  summary: Falha na validação dos dados
+                  value:
+                    message: "A Validação falhou"
+                    errors:
+                      - path: ["nome"]
+                        message: "Nome não pode ser vazio."
+                  $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não foi encontrada"
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao atualizar zona de emissão."
+    delete:
+      tags:
+        - Zona de Emissão
+      summary: Exclui uma zona de emissão
+      description: Exclui uma zona de emissão existente identificada pelo ID.
+      operationId: deleteZonaEmissaoById
+      responses:
+        '204':
+          description: Zona de emissão excluída com sucesso. Sem conteúdo.
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "O ID deve ser um número inteiro."
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não foi encontrada"
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao remover zona de emissão."
+
+  /api/v1/zona/{id}/receptores:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID numérico da zona de emissão.
+        schema:
+          type: number
+          example: 1
+    get:
+      tags:
+        - Receptor
+        - Zona de Emissão
+      summary: Busca todos os receptores de uma zona de emissão
+      description: Retorna uma lista de todos os receptores associados a uma zona de emissão específica.
+      operationId: getReceptoresByidZonaEmissao
+      responses:
+        '200':
+          description: Lista de receptores recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceptorSelect'
+        '400':
+          description: ID da zona de emissão em formato inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                  - path: ["id"]
+                    message: "O ID deve ser um número inteiro positivo."
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não encontrada."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar receptores da zona de emissão."
+
+  /api/v1/zona/{id}/emissores:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID numérico da zona de emissão para buscar seus emissores.
+        schema:
+          type: number
+          example: 1
+    get:
+      tags:
+        - Emissor
+        - Zona de Emissão
+      summary: Busca todos os emissores de uma zona de emissão
+      description: Retorna uma lista de todos os emissores associados a uma zona de emissão específica.
+      operationId: getEmissoresByidZonaEmissao
+      responses:
+        '200':
+          description: Lista de emissores recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmissorSelect'
+        '400':
+          description: ID da zona de emissão em formato inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                  - path: ["id"]
+                    message: "O ID da zona de emissão deve ser um número inteiro positivo."
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não encontrada."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar emissores para a zona de emissão."
+
+  /api/v1/zona/{id}/abrigos:
+    parameters:
+      - name: id # Corresponds to idPath in the code, interpreted as idZonaEmissao
+        in: path
+        required: true
+        description: ID numérico da zona de emissão para buscar seus abrigos.
+        schema:
+          type: number
+          example: 1
+    get:
+      tags:
+        - Abrigo
+        - Zona de Emissão
+      summary: Busca todos os abrigos de uma zona de emissão
+      description: Retorna uma lista de todos os abrigos associados a uma zona de emissão específica.
+      operationId: getAbrigosByidZonaEmissao
+      responses:
+        '200':
+          description: Lista de abrigos recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AbrigoSelect'
+        '400':
+          description: ID da zona de emissão em formato inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                  - path: ["id"] # Assuming Zod validates the 'id' path parameter
+                    message: "O ID da zona de emissão deve ser um número inteiro positivo."
+        '404':
+          description: Zona de emissão não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão não encontrada." # From error.message
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar abrigos para a zona de emissão."
+
+
+  /api/v1/receptores:
+    get:
+      tags:
+        - Receptor
+      summary: Busca todos os receptores
+      description: Retorna uma lista de todos os receptores cadastrados.
+      operationId: getAllReceptores
+      responses:
+        '200':
+          description: Lista de receptores recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceptorSelect'
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar Receptores."
+    post:
+      tags:
+        - Receptor
+      summary: Cria um novo receptor
+      description: Cria um novo receptor com os dados fornecidos.
+      operationId: createReceptor
+      requestBody:
+        description: Dados do novo receptor.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceptorCreateInput'
+      responses:
+        '201':
+          description: Receptor criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceptorSelect'
+        '400':
+          description: Dados inválidos fornecidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "Dados inválidos."
+                errors:
+                  - path: ["nome"]
+                    message: "O campo 'nome' é obrigatório."
+        '404':
+          description: Entidade relacionada não encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Zona de Emissão com ID especificado não foi encontrada."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno no servidor ao criar o Receptor."
+
+  /api/v1/receptores/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID numérico do receptor a ser operado. O serviço espera um inteiro positivo.
+        schema:
+          type: number
+          example: 10
+    get:
+      tags:
+        - Receptor
+      summary: Busca um receptor pelo ID
+      description: Retorna um receptor específico com base no seu ID.
+      operationId: getReceptorById
+      responses:
+        '200':
+          description: Receptor recuperado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceptorSelect'
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                 - path: ["id"]
+                   message: "O ID deve ser um número inteiro positivo."
+        '404':
+          description: Receptor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Receptor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar receptor."
+    put:
+      tags:
+        - Receptor
+      summary: Atualiza um receptor existente
+      description: Atualiza os dados de um receptor existente identificado pelo ID.
+      operationId: updateReceptorById
+      requestBody:
+        description: Dados para atualizar o receptor.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceptorUpdateInput'
+      responses:
+        '200':
+          description: Receptor atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceptorSelect'
+        '400':
+          description: ID fornecido é inválido ou dados de atualização são inválidos.
+          content:
+            application/json:
+              examples:
+                invalidId:
+                  summary: ID inválido
+                  value:
+                    message: "ID em formato inválido"
+                    errors:
+                      - path: ["id"]
+                        message: "O ID deve ser um número inteiro positivo."
+                  $ref: '#/components/schemas/ValidationError'
+                validationFailed:
+                  summary: Falha na validação dos dados
+                  value:
+                    message: "A Validação falhou"
+                    errors:
+                      - path: ["nome"]
+                        message: "Nome não pode ser vazio."
+                  $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Receptor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Receptor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao atualizar receptor."
+    delete:
+      tags:
+        - Receptor
+      summary: Exclui um receptor
+      description: Exclui um receptor existente identificado pelo ID.
+      operationId: deleteReceptorById
+      responses:
+        '204':
+          description: Receptor excluído com sucesso. Sem conteúdo.
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                 - path: ["id"]
+                   message: "O ID deve ser um número inteiro positivo."
+        '404':
+          description: Receptor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Receptor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao remover receptor."
+
+  /api/v1/emissores:
+    get:
+      tags:
+        - Emissor
+      summary: Busca todos os emissores
+      description: Retorna uma lista de todos os emissores cadastrados.
+      operationId: getAllEmissores
+      responses:
+        '200':
+          description: Lista de emissores recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmissorSelect'
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar emissores."
+    post:
+      tags:
+        - Emissor
+      summary: Cria um novo emissor
+      description: Cria um novo emissor com os dados fornecidos.
+      operationId: createEmissor
+      requestBody:
+        description: Dados do novo emissor.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmissorCreateInput'
+      responses:
+        '201':
+          description: Emissor criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmissorSelect'
+        '400':
+          description: Dados inválidos fornecidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "Dados inválidos."
+                errors:
+                  - path: ["nome"]
+                    message: "O campo 'nome' é obrigatório."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno no servidor ao criar emissor."
+
+  /api/v1/emissores/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID numérico do emissor a ser operado.
+        schema:
+          type: number
+          example: 20
+    get:
+      tags:
+        - Emissor
+      summary: Busca um emissor pelo ID
+      description: Retorna um emissor específico com base no seu ID.
+      operationId: getEmissorById
+      responses:
+        '200':
+          description: Emissor recuperado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmissorSelect'
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                  - path: ["id"]
+                    message: "O ID do emissor deve ser um número inteiro positivo."
+        '404':
+          description: Emissor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Emissor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar emissor."
+    put:
+      tags:
+        - Emissor
+      summary: Atualiza um emissor existente
+      description: Atualiza os dados de um emissor existente identificado pelo ID.
+      operationId: updateEmissorById
+      requestBody:
+        description: Dados para atualizar o emissor.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmissorUpdateInput'
+      responses:
+        '200':
+          description: Emissor atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmissorSelect'
+        '400':
+          description: ID fornecido é inválido ou dados de atualização são inválidos.
+          content:
+            application/json:
+              examples:
+                invalidId:
+                  summary: ID inválido
+                  value:
+                    message: "ID em formato inválido"
+                    errors:
+                      - path: ["id"]
+                        message: "O ID do emissor deve ser um número inteiro positivo."
+                  $ref: '#/components/schemas/ValidationError'
+                validationFailed:
+                  summary: Falha na validação dos dados
+                  value:
+                    message: "A Validação falhou"
+                    errors:
+                      - path: ["nome"]
+                        message: "Nome não pode ser vazio."
+                  $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Emissor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Emissor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao atualizar emissor."
+    delete:
+      tags:
+        - Emissor
+      summary: Exclui um emissor
+      description: Exclui um emissor existente identificado pelo ID.
+      operationId: deleteEmissorById
+      responses:
+        '204':
+          description: Emissor excluído com sucesso. Sem conteúdo.
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                  - path: ["id"]
+                    message: "O ID do emissor deve ser um número inteiro positivo."
+        '404':
+          description: Emissor não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Emissor não encontrado."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao remover emissor."
+
+  /api/v1/abrigos:
+    get:
+      tags:
+        - Abrigo
+      summary: Busca todos os abrigos
+      description: Retorna uma lista de todos os abrigos cadastrados.
+      operationId: getAllAbrigos
+      responses:
+        '200':
+          description: Lista de abrigos recuperada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AbrigoSelect'
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar abrigos."
+    post:
+      tags:
+        - Abrigo
+      summary: Cria um novo abrigo
+      description: Cria um novo abrigo com os dados fornecidos.
+      operationId: createAbrigo
+      requestBody:
+        description: Dados do novo abrigo.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbrigoCreateInput'
+      responses:
+        '201':
+          description: Abrigo criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbrigoSelect'
+        '400':
+          description: Dados inválidos fornecidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "Dados inválidos."
+                errors:
+                  - path: ["nome"]
+                    message: "O campo 'nome' é obrigatório."
+        '409':
+          description: Conflito, já existe um abrigo com este nome.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Já existe uma abrigo com este nome."
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno no servidor ao criar abrigo."
+
+  /api/v1/abrigos/{id}:
+    parameters:
+      - name: id # Corresponds to idPath in the code, interpreted as abrigoId
+        in: path
+        required: true
+        description: ID numérico do abrigo a ser operado.
+        schema:
+          type: number
+          example: 1
+    get:
+      tags:
+        - Abrigo
+      summary: Busca um abrigo pelo ID
+      description: Retorna um abrigo específico com base no seu ID.
+      operationId: getAbrigoById
+      responses:
+        '200':
+          description: Abrigo recuperado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbrigoSelect'
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                  - path: ["id"]
+                    message: "O ID do abrigo deve ser um número inteiro positivo."
+        '404':
+          description: Abrigo não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Abrigo não encontrado." # From error.message
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao buscar abrigo."
+    put:
+      tags:
+        - Abrigo
+      summary: Atualiza um abrigo existente
+      description: Atualiza os dados de um abrigo existente identificado pelo ID.
+      operationId: updateAbrigoById
+      requestBody:
+        description: Dados para atualizar o abrigo.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbrigoUpdateInput'
+      responses:
+        '200':
+          description: Abrigo atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbrigoSelect'
+        '400':
+          description: ID fornecido é inválido ou dados de atualização são inválidos.
+          content:
+            application/json:
+              examples:
+                invalidId:
+                  summary: ID inválido
+                  value:
+                    message: "ID em formato inválido"
+                    errors:
+                      - path: ["id"]
+                        message: "O ID do abrigo deve ser um número inteiro positivo."
+                  $ref: '#/components/schemas/ValidationError'
+                validationFailed:
+                  summary: Falha na validação dos dados
+                  value:
+                    message: "A Validação falhou"
+                    errors:
+                      - path: ["nome"]
+                        message: "Nome não pode ser vazio."
+                  $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Abrigo não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Abrigo não encontrado." # From error.message
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao atualizar abrigo."
+    delete:
+      tags:
+        - Abrigo
+      summary: Exclui um abrigo
+      description: Exclui um abrigo existente identificado pelo ID.
+      operationId: deleteAbrigoById
+      responses:
+        '204':
+          description: Abrigo excluído com sucesso. Sem conteúdo.
+        '400':
+          description: ID fornecido é inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "ID em formato inválido"
+                errors:
+                  - path: ["id"]
+                    message: "O ID do abrigo deve ser um número inteiro positivo."
+        '404':
+          description: Abrigo não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Abrigo não encontrado." # From error.message
+        '500':
+          description: Erro interno no servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              example:
+                message: "Erro interno ao remover abrigo."
+
+components:
+  schemas:
+    ZonaEmissaoWithRelationships:
+      type: object
+      description: Representa uma zona de emissão com suas relações.
+      properties:
+        idZonaEmissao:
+          type: number
+          description: Identificador único da zona de emissão.
+          readOnly: true
+          example: 1
+        nome:
+          type: string
+          description: Nome da zona de emissão.
+          example: "kod3/zona"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional da zona de emissão.
+          example: "Área com concentração de indústrias pesadas."
+        abrigos:
+          type: array
+          items: 
+            type: object # Could be $ref: '#/components/schemas/AbrigoSelect'
+          description: Lista de abrigos associados à zona de emissão (detalhes via endpoint dedicado).
+          example: []
+        emissores:
+          type: array
+          items: 
+            type: object # Could be $ref: '#/components/schemas/EmissorSelect'
+          description: Lista de emissores associados à zona de emissão (detalhes via endpoint dedicado).
+          example: []
+        receptores:
+          type: array
+          items: 
+            type: object # Could be $ref: '#/components/schemas/ReceptorSelect'
+          description: Lista de receptores associados à zona de emissão (detalhes via endpoint dedicado).
+          example: []
+        
+    ZonaEmissaoWithoutRelationships:
+        type: object
+        description: Representa uma zona de emissão (sem detalhamento de relações diretas).
+        properties:
+          idZonaEmissao:
+            type: number 
+            description: Identificador único da zona de emissão.
+            readOnly: true
+            example: 1 
+          nome:
+            type: string
+            description: Nome da zona de emissão.
+            example: "kod3/zona"
+          descricao:
+            type: string
+            nullable: true
+            description: Descrição opcional da zona de emissão.
+            example: "Área com concentração de indústrias pesadas."
+            
+    ZonaEmissaoCreateInput:
+      type: object
+      description: Dados necessários para criar uma nova zona de emissão.
+      properties:
+        nome:
+          type: string
+          description: Nome da zona de emissão.
+          example: "Centro Histórico"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional da zona de emissão.
+          example: "Área de preservação com restrições de emissão."
+      required:
+        - nome
+
+    ZonaEmissaoUpdateInput:
+      type: object
+      description: Dados para atualizar uma zona de emissão existente. Pelo menos um campo modificável deve ser fornecido.
+      properties:
+        nome:
+          type: string
+          description: Novo nome da zona de emissão.
+          example: "Zona Residencial Oeste Atualizada"
+        descricao:
+          type: string
+          nullable: true
+          description: Nova descrição opcional da zona de emissão.
+          example: "Área predominantemente residencial com parques e ciclovias."
+
+    ReceptorSelect:
+      type: object
+      description: Representa um receptor.
+      properties:
+        id:
+          type: number
+          description: Identificador único do receptor.
+          readOnly: true
+          example: 10
+        nome:
+          type: string
+          description: Nome do receptor.
+          example: "Hospital Central"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional do receptor.
+          example: "Receptor sensível a ruído."
+        latitude:
+          type: number
+          format: double
+          description: Latitude do receptor.
+          example: -22.4567
+        longitude:
+          type: number
+          format: double
+          description: Longitude do receptor.
+          example: -46.7890
+        idZonaEmissao:
+          type: number
+          description: ID da Zona de Emissão à qual o receptor pertence.
+          example: 1
+
+    ReceptorCreateInput:
+      type: object
+      description: Dados necessários para criar um novo receptor.
+      properties:
+        nome:
+          type: string
+          description: Nome do receptor.
+          example: "Escola Municipal"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional do receptor.
+        latitude:
+          type: number
+          format: double
+          description: Latitude do receptor.
+          example: -22.4588
+        longitude:
+          type: number
+          format: double
+          description: Longitude do receptor.
+          example: -46.7901
+        idZonaEmissao:
+          type: number
+          description: ID da Zona de Emissão à qual o receptor será associado.
+          example: 1
+      required:
+        - nome
+        - latitude
+        - longitude
+        - idZonaEmissao
+
+    ReceptorUpdateInput:
+      type: object
+      description: Dados para atualizar um receptor existente. Pelo menos um campo deve ser fornecido.
+      properties:
+        nome:
+          type: string
+          description: Novo nome do receptor.
+          example: "Escola Municipal Fundamental"
+        descricao:
+          type: string
+          nullable: true
+          description: Nova descrição opcional do receptor.
+        latitude:
+          type: number
+          format: double
+          description: Nova latitude do receptor.
+          example: -22.4589
+        longitude:
+          type: number
+          format: double
+          description: Nova longitude do receptor.
+          example: -46.7902
+        idZonaEmissao:
+          type: number
+          description: Novo ID da Zona de Emissão à qual o receptor será associado.
+          example: 2
+
+    EmissorSelect:
+      type: object
+      description: Representa um emissor.
+      properties:
+        id:
+          type: number
+          description: Identificador único do emissor.
+          readOnly: true
+          example: 20
+        nome:
+          type: string
+          description: Nome do emissor.
+          example: "Chaminé Principal Fábrica X"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional do emissor.
+          example: "Emissor de poluentes gasosos."
+        latitude:
+          type: number
+          format: double
+          description: Latitude do emissor.
+          example: -22.1234
+        longitude:
+          type: number
+          format: double
+          description: Longitude do emissor.
+          example: -46.5678
+        altura:
+          type: number
+          format: double
+          description: Altura do ponto de emissão em metros.
+          example: 50
+        tipoEmissorId:
+          type: number
+          description: ID do tipo de emissor (referencia uma entidade TipoEmissor não definida neste escopo).
+          example: 3
+        idZonaEmissao:
+          type: number
+          description: ID da Zona de Emissão à qual o emissor pertence.
+          example: 1
+
+    EmissorCreateInput:
+      type: object
+      description: Dados necessários para criar um novo emissor.
+      properties:
+        nome:
+          type: string
+          description: Nome do emissor.
+          example: "Nova Caldeira Industrial"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional do emissor.
+        latitude:
+          type: number
+          format: double
+          description: Latitude do emissor.
+        longitude:
+          type: number
+          format: double
+          description: Longitude do emissor.
+        altura:
+          type: number
+          format: double
+          description: Altura do ponto de emissão em metros.
+        tipoEmissorId:
+          type: number
+          description: ID do tipo de emissor.
+        idZonaEmissao:
+          type: number
+          description: ID da Zona de Emissão à qual o emissor será associado.
+      required:
+        - nome
+        - latitude
+        - longitude
+        - altura
+        - tipoEmissorId
+        - idZonaEmissao
+
+    EmissorUpdateInput:
+      type: object
+      description: Dados para atualizar um emissor existente. Pelo menos um campo deve ser fornecido.
+      properties:
+        nome:
+          type: string
+          description: Novo nome do emissor.
+        descricao:
+          type: string
+          nullable: true
+          description: Nova descrição opcional do emissor.
+        latitude:
+          type: number
+          format: double
+          description: Nova latitude do emissor.
+        longitude:
+          type: number
+          format: double
+          description: Nova longitude do emissor.
+        altura:
+          type: number
+          format: double
+          description: Nova altura do ponto de emissão em metros.
+        tipoEmissorId:
+          type: number
+          description: Novo ID do tipo de emissor.
+        idZonaEmissao:
+          type: number
+          description: Novo ID da Zona de Emissão.
+
+    AbrigoSelect:
+      type: object
+      description: Representa um abrigo (e.g., barreira acústica).
+      properties:
+        idAbrigo:
+          type: number
+          description: Identificador único do abrigo.
+          readOnly: true
+          example: 1
+        nome:
+          type: string
+          description: Nome do abrigo.
+          example: "Barreira Acústica Rodovia Principal"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional do abrigo.
+          example: "Barreira de concreto com 3m de altura."
+        latitude:
+          type: number
+          format: double
+          description: Latitude do receptor.
+          example: -22.4567
+        longitude:
+          type: number
+          format: double
+          description: Longitude do receptor.
+          example: -46.7890
+        atenuacao:
+          type: number
+          format: double
+          nullable: true
+          description: Valor de atenuação acústica (dB), se aplicável.
+          example: 15.5
+        idZonaEmissao:
+          type: number
+          description: ID da Zona de Emissão à qual o abrigo está associado.
+          example: 1
+
+    AbrigoCreateInput:
+      type: object
+      description: Dados necessários para criar um novo abrigo.
+      properties:
+        nome:
+          type: string
+          description: Nome do abrigo.
+          example: "Nova Barreira Residencial"
+        descricao:
+          type: string
+          nullable: true
+          description: Descrição opcional do abrigo.
+        latitude:
+          type: number
+          format: double
+          description: Latitude do receptor.
+          example: -22.4567
+        longitude:
+          type: number
+          format: double
+          description: Longitude do receptor.
+          example: -46.7890
+        idZonaEmissao:
+          type: number
+          description: ID da Zona de Emissão à qual o abrigo será associado.
+      required:
+        - nome
+        - idZonaEmissao
+        - latitude
+        - longitude
+
+    AbrigoUpdateInput:
+      type: object
+      description: Dados para atualizar um abrigo existente. Pelo menos um campo deve ser fornecido.
+      properties:
+        nome:
+          type: string
+          description: Novo nome do abrigo.
+        descricao:
+          type: string
+          nullable: true
+          description: Nova descrição opcional do abrigo.
+        atenuacao:
+          type: number
+          format: double
+          nullable: true
+          description: Novo valor de atenuação acústica (dB).
+        idZonaEmissao:
+          type: number
+          description: Novo ID da Zona de Emissão.
+
+    ErrorMessage:
+      type: object
+      description: Esquema genérico para mensagens de erro.
+      properties:
+        message:
+          type: string
+          description: Mensagem de erro.
+      required:
+        - message
+
+    ValidationError:
+      type: object
+      description: Esquema para erros de validação.
+      properties:
+        message:
+          type: string
+          description: Mensagem geral indicando que os dados são inválidos ou falha na validação.
+          example: "A Validação falhou" 
+        errors:
+          type: array
+          description: Uma lista de erros de validação detalhados.
+          items:
+            type: object
+            properties:
+              path:
+                type: array
+                items:
+                  type: string 
+                description: O caminho para o campo que falhou na validação.
+                example: ["nome"]
+              message:
+                type: string
+                description: A mensagem de erro específica para este campo.
+                example: "Nome deve ter pelo menos 3 caracteres."
+            required:
+              - path
+              - message
+      required:
+        - message
+        - errors
