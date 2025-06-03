@@ -1,3 +1,5 @@
+import { ArrowRight, Bell, Droplets, Shield, Users } from "lucide-react";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -7,10 +9,8 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { ArrowRight, Droplets, Shield, Bell, Users } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
