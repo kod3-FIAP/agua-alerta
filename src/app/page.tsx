@@ -9,13 +9,14 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
+import Link from "next/link";
 
 export default async function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
       <section className="from-background to-muted relative flex min-h-screen items-center bg-gradient-to-b">
-        <div className="container w-full px-4 md:px-6">
+        <div className="container mx-auto w-full px-4 md:px-6">
           <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
             <div className="flex flex-col space-y-6 text-left">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
@@ -25,9 +26,11 @@ export default async function Home() {
                 Tecnologia a serviço da prevenção de alagamentos. Monitoramento
                 inteligente para proteger comunidades vulneráveis.
               </p>
-              <Button size="lg" className="w-fit">
-                Como funciona <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              <Link href="#como-funciona">
+                <Button size="lg" className="w-fit">
+                  Como funciona <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
             <div className="bg-muted/50 relative overflow-hidden rounded-2xl shadow-lg">
               <div className="bg-muted/30 aspect-video w-full">
@@ -47,7 +50,7 @@ export default async function Home() {
       </section>
 
       {/* How it Works Section */}
-      <section className="bg-muted/50 py-24">
+      <section className="bg-muted/50 py-24" id="como-funciona">
         <div className="container mx-auto px-4 md:px-6">
           <h2 className="mb-12 text-center text-3xl font-bold">
             Como Funciona
@@ -201,7 +204,7 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="bg-muted py-12">
-        <div className="container px-4 md:px-6">
+        <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             <div>
               <h3 className="mb-4 font-bold">Contato</h3>
@@ -221,7 +224,7 @@ export default async function Home() {
             </div>
             <div>
               <h3 className="mb-4 font-bold">Sobre</h3>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground text-sm w-[300px]">
                 Projeto acadêmico desenvolvido para promover a segurança e
                 prevenção de desastres naturais.
               </p>
