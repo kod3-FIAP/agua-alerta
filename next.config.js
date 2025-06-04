@@ -5,14 +5,6 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@": "./src",
-    };
-    return config;
-  },
-};
+const config = {};
 
 export default config;
