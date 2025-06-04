@@ -6,4 +6,3 @@ export const CreateReceptorSchema = z.object({
   longitude: z.number(),
   idZonaEmissao: z.number().int().positive("ID da Zona de Emissão inválido"),
 });
-

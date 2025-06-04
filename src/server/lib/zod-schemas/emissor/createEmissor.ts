@@ -8,4 +8,3 @@ export const CreateEmissorSchema = z.object({
   valorEmergencia: z.number(),
   idZonaEmissao: z.number().int().positive("ID da Zona de Emissão inválido"),
 });
-

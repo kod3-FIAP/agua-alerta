@@ -123,3 +123,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Fix Leaflet map z-index to ensure dialogs appear above the map */
+@layer components {
+  .leaflet-container {
+    z-index: 1 !important;
+  }
+  
+  .leaflet-pane {
+    z-index: auto !important;
+  }
+  
+  .leaflet-map-pane {
+    z-index: 1 !important;
+  }
+  
+  /* Ensure popups still work properly but don't override dialogs */
+  .leaflet-popup-pane {
+    z-index: 10 !important;
+  }
+  
+  .leaflet-tooltip-pane {
+    z-index: 10 !important;
+  }
+  
+  /* Keep control elements accessible but below dialogs */
+  .leaflet-control-container {
+    z-index: 20 !important;
+  }
+}
