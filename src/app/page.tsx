@@ -10,8 +10,18 @@ import {
 } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import Link from "next/link";
+import { auth } from "~/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (session?.user) {
+    redirect("/dashboard");
+  }
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -224,7 +234,7 @@ export default async function Home() {
             </div>
             <div>
               <h3 className="mb-4 font-bold">Sobre</h3>
-              <p className="text-muted-foreground text-sm w-[300px]">
+              <p className="text-muted-foreground w-[300px] text-sm">
                 Projeto acadêmico desenvolvido para promover a segurança e
                 prevenção de desastres naturais.
               </p>
