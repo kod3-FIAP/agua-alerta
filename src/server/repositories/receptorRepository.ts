@@ -1,6 +1,9 @@
 import { type Prisma } from "@prisma/client";
 import { db } from "~/server/db";
-import type { ReceptorCreateInput, ReceptorUpdateInput } from "../lib/types/types";
+import type {
+  ReceptorCreateInput,
+  ReceptorUpdateInput,
+} from "../lib/types/types";
 
 const receptorRepository = {
   async findById(id: number) {

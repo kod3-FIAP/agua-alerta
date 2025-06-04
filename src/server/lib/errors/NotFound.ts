@@ -4,7 +4,7 @@ export class NotFoundErr extends Error {
 
   constructor(message: string, details?: unknown) {
     super(message);
-    this.name = 'HttpError';
+    this.name = "HttpError";
     this.status = 404;
     this.details = details;
 

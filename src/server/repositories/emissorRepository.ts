@@ -1,6 +1,9 @@
 import { type Prisma } from "@prisma/client";
 import { db } from "~/server/db";
-import type { EmissorCreateInput, EmissorUpdateInput } from "../lib/types/types";
+import type {
+  EmissorCreateInput,
+  EmissorUpdateInput,
+} from "../lib/types/types";
 
 const emissorRepository = {
   async findById(id: number) {

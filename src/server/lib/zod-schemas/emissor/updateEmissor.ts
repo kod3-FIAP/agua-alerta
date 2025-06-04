@@ -6,5 +6,5 @@ export const UpdateEmissorSchema = z.object({
   longitude: z.number().optional(),
   valorAlerta: z.number().optional(),
   valorEmergencia: z.number().optional(),
-  idZonaEmissao: z.number().positive().optional()
+  idZonaEmissao: z.number().positive().optional(),
 });

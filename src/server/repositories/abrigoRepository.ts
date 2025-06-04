@@ -1,6 +1,9 @@
 import { type Prisma } from "@prisma/client";
 import { db } from "~/server/db";
-import type { AbrigoCreateInput, AbrigoUpdateInput } from "~/server/lib/types/types";
+import type {
+  AbrigoCreateInput,
+  AbrigoUpdateInput,
+} from "~/server/lib/types/types";
 
 const abrigoRepository = {
   async findById(idAbrigo: number) {

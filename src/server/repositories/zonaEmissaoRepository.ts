@@ -1,6 +1,9 @@
 import { type Prisma } from "@prisma/client";
 import { db } from "~/server/db";
-import type { ZonaEmissaoCreateInput, ZonaEmissaoUpdateInput } from "../lib/types/types";
+import type {
+  ZonaEmissaoCreateInput,
+  ZonaEmissaoUpdateInput,
+} from "../lib/types/types";
 
 const zonaEmissaoRepository = {
   async findById(idZonaEmissao: number) {
@@ -28,14 +31,14 @@ const zonaEmissaoRepository = {
   async create(data: ZonaEmissaoCreateInput) {
     return db.zonaEmissao.create({
       data,
-    }) 
+    });
   },
 
   async update(idZonaEmissao: number, data: ZonaEmissaoUpdateInput) {
     return db.zonaEmissao.update({
       where: { idZonaEmissao },
       data,
-    }) 
+    });
   },
 
   async delete(idZonaEmissao: number) {
