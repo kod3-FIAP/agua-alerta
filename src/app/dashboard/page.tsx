@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-[calc(100vh-65px)] bg-gray-50 p-8">
       <div className="mx-auto max-w-7xl">
         <div className="sm:mb-8 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div className="sm:mb-0 mb-4">
