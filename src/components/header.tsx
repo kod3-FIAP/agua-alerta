@@ -30,10 +30,8 @@ export async function Header() {
             </span>
           </Link>
           {session?.user ? (
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard">
-                <Button variant={"link"}>Dashboard</Button>
-              </Link>
+            <div className="flex items-center gap-2 mr-2">
+              <span className="text-sm font-medium">{session.user.name ?? session.user.email}</span>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
