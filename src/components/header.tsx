@@ -36,7 +36,7 @@ export function Header() {
           </Link>
           {session?.user ? (
             <div className="mr-2 flex items-center gap-2">
-              <span className="text-sm font-medium">
+              <span className="hidden sm:block text-sm font-medium">
                 {session.user.name ?? session.user.email}
               </span>
               <Popover>
