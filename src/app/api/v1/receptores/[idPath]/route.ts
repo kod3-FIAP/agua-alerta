@@ -5,7 +5,6 @@ import { NotFoundErr } from "~/server/lib/errors/NotFound";
 import type { ReceptorUpdateInput } from "~/server/lib/types/types";
 import { parseId } from "~/server/lib/zod-schemas/id/idSchema";
 import { receptorService } from "~/server/services/receptorService";
-import { revalidatePath } from "next/cache";
 
 export const GET = withAuth(
   async (
@@ -81,7 +80,7 @@ export const DELETE = withAuth(
     try {
       const id = parseId(idPath);
       await receptorService.deleteReceptor(id);
-      revalidatePath("/dashboard");
+
       return new NextResponse(null, { status: 204 });
     } catch (error) {
       if (error instanceof z.ZodError) {

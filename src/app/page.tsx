@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
-import Link from "next/link";
 import { auth } from "~/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -24,7 +23,6 @@ export default async function Home() {
   }
   return (
     <main className="min-h-screen">
-      {/* Hero Section */}
       <section className="from-background to-muted relative flex min-h-screen items-center bg-gradient-to-b">
         <div className="container mx-auto w-full px-4 md:px-6">
           <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
@@ -36,15 +34,14 @@ export default async function Home() {
                 Tecnologia a serviço da prevenção de alagamentos. Monitoramento
                 inteligente para proteger comunidades vulneráveis.
               </p>
-              <Link href="#como-funciona">
+              <a href="#como-funciona">
                 <Button size="lg" className="w-fit">
                   Como funciona <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link>
+              </a>
             </div>
             <div className="bg-muted/50 relative overflow-hidden rounded-2xl shadow-lg">
               <div className="bg-muted/30 aspect-video w-full">
-                {/* Video placeholder - replace src with actual video */}
                 <video
                   className="h-full w-full object-cover"
                   poster="/placeholder.jpg"

@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withAuth } from "~/app/api/_utils/withAuth";
@@ -50,7 +49,7 @@ export const PUT = withAuth(
       const id = parseId(idPath);
       const body = (await request.json()) as AbrigoUpdateInput;
       const updatedZonaEmissao = await abrigoService.updateAbrigo(id, body);
-      revalidatePath("/dashboard");
+
       return NextResponse.json(updatedZonaEmissao);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -83,7 +82,7 @@ export const DELETE = withAuth(
     try {
       const id = parseId(idPath);
       await abrigoService.deleteAbrigo(id);
-      revalidatePath("/dashboard");
+
       return new NextResponse(null, { status: 204 });
     } catch (error) {
       if (error instanceof z.ZodError) {

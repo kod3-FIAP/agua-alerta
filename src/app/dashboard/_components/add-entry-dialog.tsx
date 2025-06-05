@@ -198,7 +198,7 @@ export function AddEntryDialog() {
           Adicionar Entrada
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-h-[95vh] max-w-[95vw] overflow-y-auto sm:max-h-none sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Adicionar Nova Entrada</DialogTitle>
           <DialogDescription>
@@ -209,7 +209,7 @@ export function AddEntryDialog() {
         {!entryType ? (
           <div className="space-y-4">
             <Label>Tipo de Entrada</Label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Button
                 variant="outline"
                 className="flex h-20 flex-col gap-2"
@@ -240,7 +240,7 @@ export function AddEntryDialog() {
               )}
               className="space-y-4"
             >
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={emissorForm.control}
                   name="descricao"
@@ -294,7 +294,7 @@ export function AddEntryDialog() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={emissorForm.control}
                   name="latitude"
@@ -339,7 +339,7 @@ export function AddEntryDialog() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={emissorForm.control}
                   name="valorAlerta"
@@ -384,7 +384,7 @@ export function AddEntryDialog() {
                 />
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex-col gap-2 sm:flex-row sm:gap-0">
                 <Button type="button" variant="outline" onClick={handleClose}>
                   Cancelar
                 </Button>
@@ -402,7 +402,7 @@ export function AddEntryDialog() {
               )}
               className="space-y-4"
             >
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={receptorForm.control}
                   name="descricao"
@@ -456,7 +456,7 @@ export function AddEntryDialog() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={receptorForm.control}
                   name="latitude"
@@ -501,7 +501,7 @@ export function AddEntryDialog() {
                 />
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex-col gap-2 sm:flex-row sm:gap-0">
                 <Button type="button" variant="outline" onClick={handleClose}>
                   Cancelar
                 </Button>
