@@ -17,8 +17,8 @@ export default function ArchitectureSection() {
 				</p>
 			</div>
 
-			<div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-				<div className="space-y-4">
+			<div className="grid gap-6 xl:grid-cols-2 xl:gap-12 items-center">
+				<div className="space-y-4 max-w-3xl mx-auto">
 					<div className="flex items-start gap-4">
 						<div className="mt-1 bg-blue-100 p-2 rounded-full">
 							<MapPin className="h-5 w-5 text-primary" />
@@ -80,7 +80,7 @@ export default function ArchitectureSection() {
 						<Image
 							src="/architecture.png"
 							alt="Arquitetura do sistema Alaga Menos"
-							className="object-cover w-full h-full"
+							className="object-cover object-left w-full h-full"
 							width={600}
 							height={400}
 						/>
