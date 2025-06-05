@@ -1,9 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import {
@@ -33,15 +35,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useZones } from "~/hooks/use-zones";
-
-const emissorSchema = z.object({
-  descricao: z.string().min(1, "Descrição é obrigatória"),
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
-  valorAlerta: z.number().positive("Valor de alerta deve ser positivo"),
-  valorEmergencia: z.number().positive("Valor de emergência deve ser positivo"),
-  idZonaEmissao: z.number().positive("Zona de emissão é obrigatória"),
-});
+import { CreateEmissorSchema } from "~/server/lib/zod-schemas/emissor/createEmissor";
 
 const receptorSchema = z.object({
   descricao: z.string().min(1, "Descrição é obrigatória"),
@@ -50,20 +44,37 @@ const receptorSchema = z.object({
   idZonaEmissao: z.number().positive("Zona de emissão é obrigatória"),
 });
 
-type EmissorFormData = z.infer<typeof emissorSchema>;
+type EmissorFormData = z.infer<typeof CreateEmissorSchema>;
 type ReceptorFormData = z.infer<typeof receptorSchema>;
+
+interface EmissorResponse {
+  id: number;
+  descricao: string;
+  latitude: number;
+  longitude: number;
+  valorAlerta: number;
+  valorEmergencia: number;
+  idZonaEmissao: number;
+}
+
+interface ReceptorResponse {
+  id: number;
+  descricao: string;
+  latitude: number;
+  longitude: number;
+  idZonaEmissao: number;
+}
 
 export function AddEntryDialog() {
   const [open, setOpen] = useState(false);
   const [entryType, setEntryType] = useState<"emissor" | "receptor" | null>(
     null,
   );
-  const [loading, setLoading] = useState(false);
-
+  const queryClient = useQueryClient();
   const { data: zones = [], isLoading: zonesLoading } = useZones();
 
-  const emissorForm = useForm<EmissorFormData>({
-    resolver: zodResolver(emissorSchema),
+  const emissorForm = useForm<z.infer<typeof CreateEmissorSchema>>({
+    resolver: zodResolver(CreateEmissorSchema),
     defaultValues: {
       descricao: "",
       latitude: 0,
@@ -84,9 +95,36 @@ export function AddEntryDialog() {
     },
   });
 
-  const onSubmitEmissor = async (data: EmissorFormData) => {
-    setLoading(true);
-    try {
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        emissorForm.setValue("latitude", latitude);
+        emissorForm.setValue("longitude", longitude);
+        receptorForm.setValue("latitude", latitude);
+        receptorForm.setValue("longitude", longitude);
+      },
+      (error) => {
+        toast.error("Unable to retrieve your location");
+        console.error(error);
+      },
+    );
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
+      getCurrentLocation();
+    }
+  };
+
+  const createEmissor = useMutation({
+    mutationFn: async (data: EmissorFormData): Promise<EmissorResponse> => {
       const response = await fetch("/api/v1/emissores", {
         method: "POST",
         headers: {
@@ -95,25 +133,28 @@ export function AddEntryDialog() {
         body: JSON.stringify(data),
       });
 
-      if (response.ok) {
-        setOpen(false);
-        setEntryType(null);
-        emissorForm.reset();
-        window.location.reload();
-      } else {
-        const error = await response.json();
-        console.error("Failed to create emissor:", error);
+      if (!response.ok) {
+        const error = (await response.json()) as { message: string };
+        throw new Error(error.message);
       }
-    } catch (error) {
-      console.error("Error creating emissor:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const onSubmitReceptor = async (data: ReceptorFormData) => {
-    setLoading(true);
-    try {
+      const result = (await response.json()) as EmissorResponse;
+      return result;
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("Emissor criado com sucesso");
+      void queryClient.invalidateQueries({ queryKey: ["emissores"] });
+      setOpen(false);
+      setEntryType(null);
+      emissorForm.reset();
+    },
+  });
+
+  const createReceptor = useMutation({
+    mutationFn: async (data: ReceptorFormData): Promise<ReceptorResponse> => {
       const response = await fetch("/api/v1/receptores", {
         method: "POST",
         headers: {
@@ -122,21 +163,25 @@ export function AddEntryDialog() {
         body: JSON.stringify(data),
       });
 
-      if (response.ok) {
-        setOpen(false);
-        setEntryType(null);
-        receptorForm.reset();
-        window.location.reload();
-      } else {
+      if (!response.ok) {
         const error = (await response.json()) as { message: string };
-        console.error("Failed to create receptor:", error);
+        throw new Error(error.message);
       }
-    } catch (error) {
-      console.error("Error creating receptor:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      const result = (await response.json()) as ReceptorResponse;
+      return result;
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success("Receptor criado com sucesso");
+      void queryClient.invalidateQueries({ queryKey: ["receptores"] });
+      setOpen(false);
+      setEntryType(null);
+      receptorForm.reset();
+    },
+  });
 
   const handleClose = () => {
     setOpen(false);
@@ -146,7 +191,7 @@ export function AddEntryDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
@@ -190,7 +235,9 @@ export function AddEntryDialog() {
         ) : entryType === "emissor" ? (
           <Form {...emissorForm}>
             <form
-              onSubmit={emissorForm.handleSubmit(onSubmitEmissor)}
+              onSubmit={emissorForm.handleSubmit((data) =>
+                createEmissor.mutate(data),
+              )}
               className="space-y-4"
             >
               <div className="grid grid-cols-2 gap-4">
@@ -220,7 +267,7 @@ export function AddEntryDialog() {
                         value={field.value?.toString()}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue
                               placeholder={
                                 zonesLoading
@@ -341,8 +388,8 @@ export function AddEntryDialog() {
                 <Button type="button" variant="outline" onClick={handleClose}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Criando..." : "Criar Emissor"}
+                <Button type="submit" disabled={createEmissor.isPending}>
+                  {createEmissor.isPending ? "Criando..." : "Criar Emissor"}
                 </Button>
               </DialogFooter>
             </form>
@@ -350,7 +397,9 @@ export function AddEntryDialog() {
         ) : (
           <Form {...receptorForm}>
             <form
-              onSubmit={receptorForm.handleSubmit(onSubmitReceptor)}
+              onSubmit={receptorForm.handleSubmit((data) =>
+                createReceptor.mutate(data),
+              )}
               className="space-y-4"
             >
               <div className="grid grid-cols-2 gap-4">
@@ -380,7 +429,7 @@ export function AddEntryDialog() {
                         value={field.value?.toString()}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue
                               placeholder={
                                 zonesLoading
@@ -390,7 +439,7 @@ export function AddEntryDialog() {
                             />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="w-full">
                           {zones.map((zone) => (
                             <SelectItem
                               key={zone.idZonaEmissao}
@@ -456,8 +505,8 @@ export function AddEntryDialog() {
                 <Button type="button" variant="outline" onClick={handleClose}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Criando..." : "Criar Receptor"}
+                <Button type="submit" disabled={createReceptor.isPending}>
+                  {createReceptor.isPending ? "Criando..." : "Criar Receptor"}
                 </Button>
               </DialogFooter>
             </form>

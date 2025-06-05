@@ -14,6 +14,7 @@ import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
 import { authClient } from "~/lib/auth-client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -42,16 +43,6 @@ export default function LoginForm() {
       setError("Erro ao fazer login. Tente novamente.");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await authClient.signIn.social({
-        provider: "google",
-      });
-    } catch (error) {
-      setError("Erro ao fazer login com Google. Tente novamente.");
     }
   };
 
@@ -104,25 +95,14 @@ export default function LoginForm() {
 
           <Separator />
 
-          <div className="space-y-2">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
-            >
-              Continuar com Google
-            </Button>
-          </div>
-
           <div className="text-center text-sm text-gray-600">
             Não tem uma conta?{" "}
-            <a
+            <Link
               href="/register"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               Cadastre-se
-            </a>
+            </Link>
           </div>
         </CardContent>
       </Card>

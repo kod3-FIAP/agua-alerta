@@ -42,16 +42,6 @@ export const emissorService = {
       );
     }
 
-    if (
-      validatedData.valorAlerta != null &&
-      validatedData.valorEmergencia != null &&
-      validatedData.valorEmergencia <= validatedData.valorAlerta
-    ) {
-      throw new Error(
-        "Valor de Emergência must be greater than Valor de Alerta.",
-      );
-    }
-
     return emissorRepository.create(
       validatedData as unknown as EmissorCreateInput,
     ) as EmissorSelect;

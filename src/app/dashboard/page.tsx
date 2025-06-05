@@ -5,19 +5,10 @@ import { EmergencyMap } from "./_components/emergency-map";
 import { AddEntryDialog } from "./_components/add-entry-dialog";
 
 export default async function DashboardPage() {
-  // Check if user is authenticated
-  let session;
-  try {
-    session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    // If user is not logged in, redirect to login
-    if (!session?.user) {
-      redirect("/login");
-    }
-  } catch (error) {
-    // If there's an error getting session, redirect to login
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (!session?.user) {
     redirect("/login");
   }
 
@@ -34,7 +25,6 @@ export default async function DashboardPage() {
           <AddEntryDialog />
         </div>
 
-        {/* Emergency Map */}
         <div className="mb-8">
           <EmergencyMap />
         </div>

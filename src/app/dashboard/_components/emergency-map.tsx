@@ -2,7 +2,6 @@ import { db } from "~/server/db";
 import { MapClient } from "./map-client";
 
 export async function EmergencyMap() {
-  // Fetch all data from database
   const [emissores, receptores, abrigos] = await Promise.all([
     db.emissor.findMany({
       include: {

@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { QueryProvider } from "~/providers/query-provider";
 import { Header } from "~/components/header";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Alaga Menos - Sistema de Monitoramento de Emergências",
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body>
         <Header />
         <QueryProvider>{children}</QueryProvider>
+        <Toaster richColors />
       </body>
     </html>
   );

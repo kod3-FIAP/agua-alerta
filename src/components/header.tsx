@@ -4,6 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { HeaderRemover } from "./header-remover";
 import { Button } from "./ui/button";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { LogOut } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export async function Header() {
   const session = await auth.api.getSession({
@@ -26,9 +30,60 @@ export async function Header() {
             </span>
           </Link>
           {session?.user ? (
-            <Link href="/dashboard">
-              <Button variant={"link"}>Dashboard</Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard">
+                <Button variant={"link"}>Dashboard</Button>
+              </Link>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>
+                        {session.user.email?.[0]?.toUpperCase() ?? "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="p-3">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback>
+                          {session.user.email?.[0]?.toUpperCase() ?? "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">
+                          {session.user.email}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="bg-border h-px" />
+                    <form
+                      action={async () => {
+                        "use server";
+                        await auth.api.signOut({
+                          headers: await headers(),
+                        });
+                        redirect("/");
+                      }}
+                    >
+                      <Button
+                        variant="ghost"
+                        className="text-destructive w-full justify-start gap-2"
+                        type="submit"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sair
+                      </Button>
+                    </form>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           ) : (
             <Link href="/login">
               <Button variant={"link"}>Entrar</Button>

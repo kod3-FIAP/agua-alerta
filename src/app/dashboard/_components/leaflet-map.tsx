@@ -11,7 +11,6 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-// Custom colored icons using URL encoding
 const emissorIcon = new L.Icon({
   iconUrl:
     "data:image/svg+xml," +
@@ -115,7 +114,6 @@ export default function LeafletMap({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
 
-      {/* Emissores - Red markers */}
       {emissores.map((emissor) => (
         <Marker
           key={`emissor-${emissor.id}`}
@@ -138,7 +136,6 @@ export default function LeafletMap({
         </Marker>
       ))}
 
-      {/* Receptores - Blue markers */}
       {receptores.map((receptor) => (
         <Marker
           key={`receptor-${receptor.id}`}
@@ -157,7 +154,6 @@ export default function LeafletMap({
         </Marker>
       ))}
 
-      {/* Abrigos - Green markers */}
       {abrigos.map((abrigo) => (
         <Marker
           key={`abrigo-${abrigo.idAbrigo}`}
