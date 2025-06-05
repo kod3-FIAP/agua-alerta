@@ -11,7 +11,7 @@ const LeafletMap = dynamic(() => import("./leaflet-map"), {
   ),
 });
 
-type EmissorWithZona = {
+export type EmissorWithZona = {
   id: number;
   descricao: string;
   latitude: number;
@@ -24,7 +24,7 @@ type EmissorWithZona = {
   };
 };
 
-type ReceptorWithZona = {
+export type ReceptorWithZona = {
   id: number;
   descricao: string;
   latitude: number;
@@ -35,7 +35,7 @@ type ReceptorWithZona = {
   };
 };
 
-type AbrigoWithZona = {
+export type AbrigoWithZona = {
   idAbrigo: number;
   nome: string;
   descricao: string;

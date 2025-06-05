@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withAuth } from "~/app/api/_utils/withAuth";
@@ -81,6 +82,7 @@ export const DELETE = withAuth(
     try {
       const id = parseId(idPath);
       await emissorService.deleteEmissor(id);
+      revalidatePath("/dashboard");
       return new NextResponse(null, { status: 204 });
     } catch (error) {
       if (error instanceof z.ZodError) {

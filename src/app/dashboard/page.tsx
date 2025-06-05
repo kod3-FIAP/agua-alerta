@@ -19,7 +19,7 @@ export default async function DashboardPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
             <p className="text-gray-600">
-              Bem-vindo, {session.user.name || session.user.email}!
+              Bem-vindo, {session.user.name ?? session.user.email}!
             </p>
           </div>
           <AddEntryDialog />

@@ -1,6 +1,10 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -24,6 +28,7 @@ const emissorIcon = new L.Icon({
   iconSize: [24, 36],
   iconAnchor: [12, 36],
   popupAnchor: [0, -36],
+  className: "emissor-marker",
 });
 
 const receptorIcon = new L.Icon({
@@ -39,6 +44,7 @@ const receptorIcon = new L.Icon({
   iconSize: [24, 36],
   iconAnchor: [12, 36],
   popupAnchor: [0, -36],
+  className: "receptor-marker",
 });
 
 const abrigoIcon = new L.Icon({
@@ -54,6 +60,7 @@ const abrigoIcon = new L.Icon({
   iconSize: [24, 36],
   iconAnchor: [12, 36],
   popupAnchor: [0, -36],
+  className: "abrigo-marker",
 });
 
 type EmissorWithZona = {
@@ -98,79 +105,173 @@ interface LeafletMapProps {
   abrigos: AbrigoWithZona[];
 }
 
+type ErrorResponse = {
+  message: string;
+};
+
+type MarkerType = "emissor" | "receptor" | "abrigo";
+
+interface MapMarkerProps {
+  type: MarkerType;
+  position: [number, number];
+  icon: L.Icon;
+  data: EmissorWithZona | ReceptorWithZona | AbrigoWithZona;
+  onDelete: () => void;
+}
+
+function MapMarker({ type, position, icon, data, onDelete }: MapMarkerProps) {
+  let title, color, extra;
+  if (type === "emissor") {
+    title = "📡 Emissor";
+    color = "text-red-600";
+    extra = (
+      <div className="mt-2 text-xs">
+        <p>⚠️ Alerta: {(data as EmissorWithZona).valorAlerta}</p>
+        <p>🚨 Emergência: {(data as EmissorWithZona).valorEmergencia}</p>
+      </div>
+    );
+  } else if (type === "receptor") {
+    title = "📻 Receptor";
+    color = "text-blue-600";
+    extra = null;
+  } else {
+    title = `🏠 ${(data as AbrigoWithZona).nome}`;
+    color = "text-green-600";
+    extra = null;
+  }
+
+  return (
+    <Marker position={position} icon={icon}>
+      <Popup autoPan={true} closeButton={true} closeOnClick={false}>
+        <div className="p-2">
+          <h3 className={`font-bold ${color}`}>{title}</h3>
+          <p className="text-sm">{"descricao" in data ? data.descricao : ""}</p>
+          <p className="text-xs text-gray-600">Zona: {data.zonaEmissao.nome}</p>
+          {extra}
+          <Button
+            variant="destructive"
+            size="sm"
+            className="mt-2 w-full"
+            onClick={onDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+            Remover
+          </Button>
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
 export default function LeafletMap({
   emissores,
   receptores,
   abrigos,
 }: LeafletMapProps) {
+  const queryClient = useQueryClient();
+
+  const deleteEmissor = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/v1/emissores/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const error = (await response.json()) as ErrorResponse;
+        throw new Error(error.message);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Emissor removido com sucesso");
+      void queryClient.invalidateQueries({ queryKey: ["mapData"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const deleteReceptor = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/v1/receptores/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const error = (await response.json()) as ErrorResponse;
+        throw new Error(error.message);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Receptor removido com sucesso");
+      void queryClient.invalidateQueries({ queryKey: ["mapData"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const deleteAbrigo = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/v1/abrigos/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const error = (await response.json()) as ErrorResponse;
+        throw new Error(error.message);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Abrigo removido com sucesso");
+      void queryClient.invalidateQueries({ queryKey: ["mapData"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
   return (
-    <MapContainer
-      center={[-23.5505, -46.6333]}
-      zoom={10}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
+    <>
+      <MapContainer
+        center={[-23.5505, -46.6333]}
+        zoom={10}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
 
-      {emissores.map((emissor) => (
-        <Marker
-          key={`emissor-${emissor.id}`}
-          position={[emissor.latitude, emissor.longitude]}
-          icon={emissorIcon}
-        >
-          <Popup>
-            <div className="p-2">
-              <h3 className="font-bold text-red-600">📡 Emissor</h3>
-              <p className="text-sm">{emissor.descricao}</p>
-              <p className="text-xs text-gray-600">
-                Zona: {emissor.zonaEmissao.nome}
-              </p>
-              <div className="mt-2 text-xs">
-                <p>⚠️ Alerta: {emissor.valorAlerta}</p>
-                <p>🚨 Emergência: {emissor.valorEmergencia}</p>
-              </div>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+        {emissores.map((emissor) => (
+          <MapMarker
+            key={`emissor-${emissor.id}`}
+            type="emissor"
+            position={[emissor.latitude, emissor.longitude]}
+            icon={emissorIcon}
+            data={emissor}
+            onDelete={() => deleteEmissor.mutate(emissor.id)}
+          />
+        ))}
 
-      {receptores.map((receptor) => (
-        <Marker
-          key={`receptor-${receptor.id}`}
-          position={[receptor.latitude, receptor.longitude]}
-          icon={receptorIcon}
-        >
-          <Popup>
-            <div className="p-2">
-              <h3 className="font-bold text-blue-600">📻 Receptor</h3>
-              <p className="text-sm">{receptor.descricao}</p>
-              <p className="text-xs text-gray-600">
-                Zona: {receptor.zonaEmissao.nome}
-              </p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+        {receptores.map((receptor) => (
+          <MapMarker
+            key={`receptor-${receptor.id}`}
+            type="receptor"
+            position={[receptor.latitude, receptor.longitude]}
+            icon={receptorIcon}
+            data={receptor}
+            onDelete={() => deleteReceptor.mutate(receptor.id)}
+          />
+        ))}
 
-      {abrigos.map((abrigo) => (
-        <Marker
-          key={`abrigo-${abrigo.idAbrigo}`}
-          position={[abrigo.latitude, abrigo.longitude]}
-          icon={abrigoIcon}
-        >
-          <Popup>
-            <div className="p-2">
-              <h3 className="font-bold text-green-600">🏠 {abrigo.nome}</h3>
-              <p className="text-sm">{abrigo.descricao}</p>
-              <p className="text-xs text-gray-600">
-                Zona: {abrigo.zonaEmissao.nome}
-              </p>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+        {abrigos.map((abrigo) => (
+          <MapMarker
+            key={`abrigo-${abrigo.idAbrigo}`}
+            type="abrigo"
+            position={[abrigo.latitude, abrigo.longitude]}
+            icon={abrigoIcon}
+            data={abrigo}
+            onDelete={() => deleteAbrigo.mutate(abrigo.idAbrigo)}
+          />
+        ))}
+      </MapContainer>
+    </>
   );
 }
