@@ -12,6 +12,13 @@ import { Separator } from "~/components/ui/separator";
 import { auth } from "~/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import ProblemSection from "~/components/problem-section";
+import SolutionSection from "~/components/solution-section";
+import ArchitectureSection from "~/components/architecture-section";
+import BenefitsSection from "~/components/benefits-section";
+import TeamSection from "~/components/team-section";
+import CTASection from "~/components/cta-section";
+import Footer from "~/components/footer";
 
 export default async function Home() {
   const session = await auth.api.getSession({
@@ -27,12 +34,12 @@ export default async function Home() {
         <div className="container mx-auto w-full px-4 md:px-6">
           <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
             <div className="flex flex-col space-y-6 text-left">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
-                Alaga Menos essa pagina ta feia
+              <h1 className=" from-primary to-primary/80 bg-gradient-to-r bg-clip-text text-transparent text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
+                Alaga Menos
               </h1>
               <p className="text-muted-foreground max-w-[600px] md:text-xl">
-                Tecnologia a serviço da prevenção de alagamentos. Monitoramento
-                inteligente para proteger comunidades vulneráveis.
+                Sistema de alerta preventivo para inundações baseado em
+                tecnologia IoT e protocolo MQTT
               </p>
               <a href="#como-funciona">
                 <Button size="lg" className="w-fit">
@@ -56,8 +63,22 @@ export default async function Home() {
         </div>
       </section>
 
+			<ProblemSection />
+
+			<SolutionSection />
+
+			<ArchitectureSection />
+
+			<BenefitsSection />
+
+			<TeamSection />
+
+			<CTASection />
+
+			<Footer />
+
       {/* How it Works Section */}
-      <section className="bg-muted/50 py-24" id="como-funciona">
+      {/* <section className="bg-muted/50 py-24" id="como-funciona">
         <div className="container mx-auto px-4 md:px-6">
           <h2 className="mb-12 text-center text-3xl font-bold">
             Como Funciona
@@ -102,10 +123,10 @@ export default async function Home() {
             </Card>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Benefits Section */}
-      <section className="py-24">
+      {/* <section className="py-24">
         <div className="container mx-auto px-4 md:px-6">
           <h2 className="mb-12 text-center text-3xl font-bold">Benefícios</h2>
           <div className="mx-auto grid max-w-3xl grid-cols-1 gap-8 md:grid-cols-2">
@@ -146,10 +167,10 @@ export default async function Home() {
             </Card>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Testimonials Section */}
-      <section className="bg-muted/50 py-24">
+      {/* <section className="bg-muted/50 py-24">
         <div className="container mx-auto px-4 md:px-6">
           <h2 className="mb-12 text-center text-3xl font-bold">
             Impacto Esperado
@@ -207,10 +228,10 @@ export default async function Home() {
             </Card>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Footer */}
-      <footer className="bg-muted py-12">
+      {/* <footer className="bg-muted py-12">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             <div>
@@ -242,7 +263,7 @@ export default async function Home() {
             © 2024 Alaga Menos. Todos os direitos reservados.
           </p>
         </div>
-      </footer>
+      </footer> */}
     </main>
   );
 }
