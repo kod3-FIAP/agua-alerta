@@ -1,5 +1,5 @@
-import { headers } from "next/headers";
-import { auth } from "~/lib/auth";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { HeaderRemover } from "./header-remover";
@@ -7,12 +7,17 @@ import { Button } from "./ui/button";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { LogOut } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useSession, signOut } from "~/lib/auth-client";
 
-export async function Header() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export function Header() {
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.refresh();
+  };
 
   return (
     <HeaderRemover>
@@ -30,8 +35,10 @@ export async function Header() {
             </span>
           </Link>
           {session?.user ? (
-            <div className="flex items-center gap-2 mr-2">
-              <span className="text-sm font-medium">{session.user.name ?? session.user.email}</span>
+            <div className="mr-2 flex items-center gap-2">
+              <span className="text-sm font-medium">
+                {session.user.name ?? session.user.email}
+              </span>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -60,24 +67,15 @@ export async function Header() {
                       </div>
                     </div>
                     <div className="bg-border h-px" />
-                    <form
-                      action={async () => {
-                        "use server";
-                        await auth.api.signOut({
-                          headers: await headers(),
-                        });
-                        redirect("/");
-                      }}
+                    <Button
+                      variant="ghost"
+                      className="text-destructive w-full justify-start gap-2"
+                      type="button"
+                      onClick={handleSignOut}
                     >
-                      <Button
-                        variant="ghost"
-                        className="text-destructive w-full justify-start gap-2"
-                        type="submit"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        Sair
-                      </Button>
-                    </form>
+                      <LogOut className="h-4 w-4" />
+                      Sair
+                    </Button>
                   </div>
                 </PopoverContent>
               </Popover>
