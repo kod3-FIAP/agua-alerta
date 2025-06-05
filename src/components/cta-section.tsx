@@ -3,11 +3,11 @@ import { Button } from "./ui/button";
 
 export default function CTASection() {
   return (
-    <section className="w-full bg-primary py-12 text-white md:py-24">
+    <section className="bg-primary w-full py-12 text-white md:py-24">
       <div className="container mx-auto px-4 md:px-6">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-            Interessado no Projeto Alaga Menos?
+            Interessado no Projeto Água Alerta?
           </h2>
           <p className="mt-4 text-lg text-blue-100">
             Acesse nossa documentação completa e conheça mais sobre como podemos

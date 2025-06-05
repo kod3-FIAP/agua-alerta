@@ -1,6 +1,6 @@
 <div align="center">
   <img src="public/logo.svg" alt="Logo" width="60" height="66"/>
-  <h1 style="margin: 0; font-size: 2.5rem; color: #0078D8">Alaga Menos</h1>
+  <h1 style="margin: 0; font-size: 2.5rem; color: #0078D8">Água Alerta</h1>
 </div>
 
 ## Descrição

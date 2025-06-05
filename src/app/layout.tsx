@@ -7,7 +7,7 @@ import { Header } from "~/components/header";
 import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "Alaga Menos - Sistema de Monitoramento de Emergências",
+  title: "Água Alerta - Sistema de Monitoramento de Emergências",
   description:
     "Plataforma inteligente para monitoramento e gerenciamento de emergências hídricas. Visualize em tempo real emissores de alerta, receptores de dados e abrigos de emergência em um mapa interativo para prevenção e resposta rápida a enchentes e alagamentos.",
   icons: [{ rel: "icon", url: "/logo.svg" }],

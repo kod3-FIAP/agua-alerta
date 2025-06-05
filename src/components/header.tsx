@@ -26,17 +26,17 @@ export function Header() {
           <Link href="/" className="ml-2 flex items-center space-x-2">
             <Image
               src="/logo.svg"
-              alt="Alaga Menos Logo"
+              alt="Água Alerta Logo"
               width={40}
               height={40}
             />
             <span className="from-primary to-primary/80 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
-              Alaga Menos
+              Água Alerta
             </span>
           </Link>
           {session?.user ? (
             <div className="mr-2 flex items-center gap-2">
-              <span className="hidden sm:block text-sm font-medium">
+              <span className="hidden text-sm font-medium sm:block">
                 {session.user.name ?? session.user.email}
               </span>
               <Popover>

@@ -1,24 +1,15 @@
-import { ArrowRight, Bell, Droplets, Shield, Users } from "lucide-react";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Separator } from "~/components/ui/separator";
-import { auth } from "~/lib/auth";
+import { ArrowRight } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import ProblemSection from "~/components/problem-section";
-import SolutionSection from "~/components/solution-section";
 import ArchitectureSection from "~/components/architecture-section";
 import BenefitsSection from "~/components/benefits-section";
-import TeamSection from "~/components/team-section";
 import CTASection from "~/components/cta-section";
 import Footer from "~/components/footer";
+import ProblemSection from "~/components/problem-section";
+import SolutionSection from "~/components/solution-section";
+import TeamSection from "~/components/team-section";
+import { Button } from "~/components/ui/button";
+import { auth } from "~/lib/auth";
 
 export default async function Home() {
   const session = await auth.api.getSession({
@@ -34,8 +25,8 @@ export default async function Home() {
         <div className="container mx-auto w-full px-4 md:px-6">
           <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
             <div className="flex flex-col space-y-6 text-left">
-              <h1 className=" from-primary to-primary/80 bg-gradient-to-r bg-clip-text text-transparent text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
-                Alaga Menos
+              <h1 className="from-primary to-primary/80 bg-gradient-to-r bg-clip-text text-3xl font-bold tracking-tighter text-transparent sm:text-4xl md:text-5xl lg:text-6xl">
+                Água Alerta
               </h1>
               <p className="text-muted-foreground max-w-[600px] md:text-xl">
                 Sistema de alerta preventivo para inundações baseado em
@@ -63,19 +54,19 @@ export default async function Home() {
         </div>
       </section>
 
-			<ProblemSection />
+      <ProblemSection />
 
-			<SolutionSection />
+      <SolutionSection />
 
-			<ArchitectureSection />
+      <ArchitectureSection />
 
-			<BenefitsSection />
+      <BenefitsSection />
 
-			<TeamSection />
+      <TeamSection />
 
-			<CTASection />
+      <CTASection />
 
-			<Footer />
+      <Footer />
 
       {/* How it Works Section */}
       {/* <section className="bg-muted/50 py-24" id="como-funciona">
@@ -260,7 +251,7 @@ export default async function Home() {
           </div>
           <Separator className="my-8" />
           <p className="text-muted-foreground text-center text-sm">
-            © 2024 Alaga Menos. Todos os direitos reservados.
+            © 2024 Água Alerta. Todos os direitos reservados.
           </p>
         </div>
       </footer> */}

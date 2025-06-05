@@ -10,7 +10,7 @@ export default function SolutionSection() {
             A Solução
           </div>
           <h2 className="text-primary mt-2 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-            Alaga Menos
+            Água Alerta
           </h2>
           <p className="text-muted-foreground mt-4 text-lg">
             Um sistema preventivo de alerta para inundações, baseado em sensores
