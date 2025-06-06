@@ -18,7 +18,7 @@ Projeto para monitoramento e gestão de eventos extremos relacionados a alagamen
    ```
 
 2. **Configure as variáveis de ambiente:**
-   Crie um arquivo `.env.local` na raiz do projeto com as variáveis de ambiente fornecidas da documentação do projeto (PDF).
+   Crie um arquivo `.env` na raiz do projeto com as variáveis de ambiente fornecidas da documentação do projeto (PDF).
    </br>
 
 3. **Execute o seed do banco de dados:**
