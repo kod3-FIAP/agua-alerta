@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { headers } from "next/headers";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import ArchitectureSection from "~/components/architecture-section";
 import BenefitsSection from "~/components/benefits-section";
@@ -10,6 +11,7 @@ import SolutionSection from "~/components/solution-section";
 import TeamSection from "~/components/team-section";
 import { Button } from "~/components/ui/button";
 import { auth } from "~/lib/auth";
+import Link from "next/link";
 
 export default async function Home() {
   const session = await auth.api.getSession({
@@ -23,31 +25,53 @@ export default async function Home() {
     <main className="min-h-screen">
       <section className="from-background to-muted relative flex min-h-screen items-center bg-gradient-to-b">
         <div className="container mx-auto w-full px-4 md:px-6">
-          <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
-            <div className="flex flex-col space-y-6 text-left">
-              <h1 className="from-primary to-primary/80 bg-gradient-to-r bg-clip-text text-3xl font-bold tracking-tighter text-transparent sm:text-4xl md:text-5xl lg:text-6xl">
-                Água Alerta
+          <div className="mx-auto grid max-w-7xl items-center gap-12">
+            <div className="pb-12 text-center md:pb-16">
+              <h1
+                className="leading-tighter mb-4 text-5xl font-extrabold tracking-tighter md:text-6xl"
+                data-aos="zoom-y-out"
+              >
+                Alerta preventivo de
+                <span className="text-primary bg-clip-text"> inundações</span>
               </h1>
-              <p className="text-muted-foreground max-w-[600px] md:text-xl">
-                Sistema de alerta preventivo para inundações baseado em
-                tecnologia IoT e protocolo MQTT
-              </p>
-              <a href="#como-funciona">
-                <Button size="lg" className="w-fit">
-                  Como funciona <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </a>
-            </div>
-            <div className="bg-muted/50 relative overflow-hidden rounded-2xl shadow-lg">
-              <div className="bg-muted/30 aspect-video w-full">
-                <video
-                  className="h-full w-full object-cover"
-                  poster="/placeholder.jpg"
-                  controls
+              <div className="mx-auto max-w-3xl">
+                <p
+                  className="mb-8 text-xl text-gray-600"
+                  data-aos="zoom-y-out"
+                  data-aos-delay="150"
                 >
-                  <source src="/demo.mp4" type="video/mp4" />
-                  Seu navegador não suporta vídeos.
-                </video>
+                  Conheça o{" "}
+                  <span className="text-primary font-semibold">
+                    Água Alerta
+                  </span>
+                  , um sistema baseado em sensores de nível de água conectados
+                  via IoT e comunicação por protocolo MQTT.
+                </p>
+                <div
+                  className="mx-auto max-w-xs sm:flex sm:max-w-none sm:justify-center"
+                  data-aos="zoom-y-out"
+                  data-aos-delay="300"
+                >
+                  <Link href="#problema">
+                    <Button
+                      size="lg"
+                      className="text-background text-base"
+                    >
+                      Saiba mais <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="relative mx-auto mt-12 max-w-4xl overflow-hidden rounded-3xl shadow-2xl">
+                <Image
+                  src="/final.gif"
+                  alt="Demonstração do sistema Água Alerta em funcionamento"
+                  width={1000}
+                  height={1000}
+                  className="w-full object-cover"
+                  priority
+                />
               </div>
             </div>
           </div>
